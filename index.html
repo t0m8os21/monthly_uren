@@ -4,173 +4,177 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Urenregistratie</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23c0392b' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async onload="onGsiLoad()"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #f4f3ef; --surface: #fff; --border: #e8e6e0;
-    --text: #1a1916; --muted: #8a8780; --ink: #3d3b36;
-    --accent: #2d5a3d; --accent-light: #e8f0ea;
-    --split-bg: #fef8ec; --split-border: #f0c84a; --split-accent: #b07c00;
-    --danger: #c0392b; --warn: #d4760a; --success: #2d5a3d;
-    --radius: 10px; --shadow: 0 2px 8px rgba(0,0,0,.07);
-  }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px 16px 40px; }
-  .app { max-width:720px; margin:0 auto; }
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --bg:#f4f3ef; --surface:#fff; --border:#e8e6e0;
+  --text:#1a1916; --muted:#8a8780; --ink:#3d3b36;
+  --accent:#2d5a3d; --accent-light:#e8f0ea;
+  --split-bg:#fef8ec; --split-border:#f0c84a; --split-accent:#b07c00;
+  --danger:#c0392b; --warn:#d4760a; --success:#2d5a3d;
+  --radius:10px; --shadow:0 2px 8px rgba(0,0,0,.07);
+}
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px 16px 40px; }
+.app { max-width:720px; margin:0 auto; }
 
-  /* ── Header ── */
-  .header { background:var(--text); color:#f4f3ef; border-radius:14px; padding:18px 22px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .header-center { text-align:center; flex:1; }
-  .header-month { font-size:21px; font-weight:700; letter-spacing:-.5px; }
-  .header-meta { margin-top:5px; font-size:13px; opacity:.75; display:flex; gap:16px; justify-content:center; align-items:center; flex-wrap:wrap; }
-  .header-meta strong { opacity:1; font-weight:600; }
-  .dv { width:1px; height:12px; background:rgba(255,255,255,.25); display:inline-block; }
-  .nav-btn { background:rgba(255,255,255,.1); border:none; color:#f4f3ef; width:36px; height:36px; border-radius:9px; cursor:pointer; font-size:20px; line-height:36px; text-align:center; flex-shrink:0; }
-  .nav-btn:hover { background:rgba(255,255,255,.2); }
-  .tgt-span { cursor:pointer; border-bottom:1px dashed rgba(255,255,255,.4); }
-  .tgt-input { width:46px; padding:1px 4px; border-radius:5px; border:none; text-align:center; font-weight:700; font-size:13px; font-family:inherit; background:rgba(255,255,255,.18); color:#f4f3ef; }
-  .view-tabs { display:flex; gap:4px; }
-  .view-tab { padding:5px 12px; border-radius:7px; border:none; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; transition:background .15s; }
-  .view-tab.active { background:rgba(255,255,255,.25); color:#f4f3ef; }
-  .view-tab.inactive { background:rgba(255,255,255,.08); color:rgba(255,255,255,.55); }
-  .view-tab:hover { background:rgba(255,255,255,.2); color:#f4f3ef; }
+/* Header */
+.header { background:var(--text); color:#f4f3ef; border-radius:14px; padding:18px 22px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.header-center { text-align:center; flex:1; }
+.header-month { font-size:21px; font-weight:700; letter-spacing:-.5px; }
+.header-meta { margin-top:5px; font-size:13px; opacity:.75; display:flex; gap:16px; justify-content:center; align-items:center; flex-wrap:wrap; }
+.header-meta strong { opacity:1; font-weight:600; }
+.dv { width:1px; height:12px; background:rgba(255,255,255,.25); display:inline-block; }
+.nav-btn { background:rgba(255,255,255,.1); border:none; color:#f4f3ef; width:36px; height:36px; border-radius:9px; cursor:pointer; font-size:20px; line-height:36px; text-align:center; flex-shrink:0; }
+.nav-btn:hover { background:rgba(255,255,255,.2); }
+.tgt-span { cursor:pointer; border-bottom:1px dashed rgba(255,255,255,.4); }
+.tgt-input { width:46px; padding:1px 4px; border-radius:5px; border:none; text-align:center; font-weight:700; font-size:13px; font-family:inherit; background:rgba(255,255,255,.18); color:#f4f3ef; }
+.view-tabs { display:flex; gap:4px; }
+.view-tab { padding:5px 12px; border-radius:7px; border:none; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; }
+.view-tab.active { background:rgba(255,255,255,.25); color:#f4f3ef; }
+.view-tab.inactive { background:rgba(255,255,255,.08); color:rgba(255,255,255,.5); }
+.view-tab:hover { background:rgba(255,255,255,.2); color:#f4f3ef; }
 
-  /* ── Panels ── */
-  .panel { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden; }
-  .ptoggle { width:100%; background:none; border:none; padding:11px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); border-bottom:1.5px solid transparent; }
-  .ptoggle:hover { background:#fafaf8; }
-  .ptoggle.open { border-bottom-color:var(--border); }
-  .ptl { display:flex; align-items:center; gap:8px; }
-  .pbody { padding:14px 16px; }
-  .add-row { display:flex; gap:8px; margin-bottom:14px; }
-  .add-input { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); font-size:13px; font-family:inherit; outline:none; }
-  .add-input:focus { border-color:var(--accent); }
-  .add-btn { padding:8px 16px; background:var(--text); color:#f4f3ef; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; font-family:inherit; }
-  .proj-row { display:grid; grid-template-columns:12px 1fr auto auto auto; gap:10px; align-items:center; padding:8px 10px; border-radius:8px; border:1.5px solid var(--border); background:#fafaf8; margin-bottom:6px; }
-  .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; display:inline-block; }
-  .budget-input { width:58px; padding:5px 6px; border-radius:7px; border:1.5px solid var(--border); text-align:center; font-size:13px; font-weight:600; font-family:'DM Mono',monospace; outline:none; }
-  .del-btn { background:none; border:none; cursor:pointer; color:#ccc; font-size:15px; padding:0 2px; line-height:1; }
-  .del-btn:hover { color:var(--danger); }
-  .data-actions { display:flex; gap:10px; flex-wrap:wrap; }
-  .data-btn { padding:8px 14px; border-radius:8px; border:1.5px solid var(--border); background:#fafaf8; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ink); display:flex; align-items:center; gap:6px; }
-  .data-btn:hover { background:#f1f0ec; }
-  .data-btn.danger { color:var(--danger); }
-  .data-btn.danger:hover { background:#fdf2f2; }
-  .data-info { margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6; }
+/* Panels */
+.panel { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden; }
+.ptoggle { width:100%; background:none; border:none; padding:11px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); border-bottom:1.5px solid transparent; }
+.ptoggle:hover { background:#fafaf8; }
+.ptoggle.open { border-bottom-color:var(--border); }
+.ptl { display:flex; align-items:center; gap:8px; }
+.pbody { padding:14px 16px; }
+.add-row { display:flex; gap:8px; margin-bottom:14px; }
+.add-input { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); font-size:13px; font-family:inherit; outline:none; }
+.add-input:focus { border-color:var(--accent); }
+.add-btn { padding:8px 16px; background:var(--text); color:#f4f3ef; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; }
+.proj-row { display:grid; grid-template-columns:12px 1fr auto auto auto; gap:10px; align-items:center; padding:8px 10px; border-radius:8px; border:1.5px solid var(--border); background:#fafaf8; margin-bottom:6px; }
+.dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; display:inline-block; }
+.budget-input { width:58px; padding:5px 6px; border-radius:7px; border:1.5px solid var(--border); text-align:center; font-size:13px; font-weight:600; font-family:'DM Mono',monospace; outline:none; }
+.del-btn { background:none; border:none; cursor:pointer; color:#ccc; font-size:15px; padding:0 2px; line-height:1; }
+.del-btn:hover { color:var(--danger); }
+.data-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.data-btn { padding:8px 14px; border-radius:8px; border:1.5px solid var(--border); background:#fafaf8; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ink); display:flex; align-items:center; gap:6px; }
+.data-btn:hover { background:#f1f0ec; }
+.data-btn.danger { color:var(--danger); }
+.data-btn.danger:hover { background:#fdf2f2; }
+.data-info { margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6; }
 
-  /* ── Week cards ── */
-  .weeks { display:flex; flex-direction:column; gap:10px; }
-  .week-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
-  .week-card.split { background:var(--split-bg); border-color:var(--split-border); }
-  .week-card.warning { border-color:#f5c6a0; }
-  .week-head { padding:9px 14px; display:flex; justify-content:space-between; align-items:center; background:#fafaf8; border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; }
-  .week-head:hover { background:#f3f2ee; }
-  .week-card.split .week-head { background:#fef4cc; border-bottom-color:#f0e08a; }
-  .week-card.collapsed .week-head { border-bottom:none; }
-  .whl { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; }
-  .week-num { color:var(--muted); font-weight:500; }
-  .week-dates { font-size:12px; color:var(--muted); font-weight:400; }
-  .split-badge { background:var(--split-accent); color:#fff; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; }
-  .warn-badge { background:#fff3e0; color:var(--warn); border:1px solid #f5c6a0; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; display:inline-flex; align-items:center; gap:3px; }
-  .whr { display:flex; gap:10px; align-items:center; font-size:13px; }
-  .chevron { font-size:11px; color:var(--muted); transition:transform .2s; display:inline-block; }
-  .week-card.collapsed .chevron { transform:rotate(-90deg); }
-  .week-body { padding:12px 14px; }
+/* Budget summary */
+.bsum-table { width:100%; border-collapse:collapse; }
+.bsum-table th { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 8px 8px; text-align:right; white-space:nowrap; }
+.bsum-table th:first-child { text-align:left; }
+.bsum-table td { padding:7px 8px; border-top:1px solid #f5f4f1; text-align:right; font-size:13px; font-family:'DM Mono',monospace; white-space:nowrap; }
+.bsum-table td:first-child { text-align:left; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; }
+.bsum-table tr.bsum-total td { border-top:1.5px solid var(--border); font-weight:700; background:#fafaf8; font-size:13px; }
+.bsum-table tr.bsum-total td:first-child { font-family:'DM Sans',sans-serif; }
+.bsum-note { font-size:11px; color:var(--muted); margin-top:8px; }
 
-  /* ── Project table ── */
-  .pth { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; padding:0 4px 6px; font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; border-bottom:1.5px solid var(--border); margin-bottom:4px; }
-  .pth span:nth-child(2) { text-align:center; }
-  .pe { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; align-items:center; padding:7px 4px; border-bottom:1px solid #f5f4f1; }
-  .pen { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; }
-  .phi { width:68px; padding:7px 6px; border-radius:8px; border-width:1.5px; border-style:solid; text-align:center; font-size:14px; font-weight:700; font-family:'DM Mono',monospace; outline:none; }
-  .warn-row { background:#fff8f3; border-radius:6px; margin:0 -4px; padding:0 4px; }
-  .warn-icon { font-size:12px; margin-left:4px; }
-  .avail-col { text-align:right; }
-  .avail-main { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; line-height:1.2; }
-  .avail-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-  .wtb { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
-  .bm { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; }
-  .bt { height:7px; background:#f0efeb; border-radius:4px; overflow:hidden; }
-  .bf { height:100%; border-radius:4px; transition:width .3s; }
-  .nb { font-size:11px; color:#ccc; }
+/* Week cards */
+.weeks { display:flex; flex-direction:column; gap:10px; }
+.week-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+.week-card.split { background:var(--split-bg); border-color:var(--split-border); }
+.week-card.warning { border-color:#f5c6a0; }
+.week-head { padding:9px 14px; display:flex; justify-content:space-between; align-items:center; background:#fafaf8; border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; }
+.week-head:hover { background:#f3f2ee; }
+.week-card.split .week-head { background:#fef4cc; border-bottom-color:#f0e08a; }
+.week-card.collapsed .week-head { border-bottom:none; }
+.whl { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; flex-wrap:wrap; }
+.week-num { color:var(--muted); font-weight:500; }
+.week-dates { font-size:12px; color:var(--muted); font-weight:400; }
+.split-badge { background:var(--split-accent); color:#fff; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; }
+.warn-badge { background:#fff3e0; color:var(--warn); border:1px solid #f5c6a0; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; display:inline-flex; align-items:center; gap:3px; }
+.whr { display:flex; gap:10px; align-items:center; font-size:13px; }
+.chevron { font-size:11px; color:var(--muted); transition:transform .2s; display:inline-block; }
+.week-card.collapsed .chevron { transform:rotate(-90deg); }
+.week-body { padding:12px 14px; }
 
-  /* ── Forecast ── */
-  .fc-row { margin-top:10px; padding:9px 12px; background:#f7f6f2; border-radius:8px; border:1px solid var(--border); }
-  .fc-main { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
-  .fc-lbl { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; }
-  .fc-val { font-size:14px; font-weight:700; font-family:'DM Mono',monospace; white-space:nowrap; }
-  .fc-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
-  .fc-chip { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; border:1.5px solid var(--border); background:white; color:var(--ink); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
-  .fc-chip.over { color:var(--danger); border-color:#f5c6c2; background:#fdf5f5; }
-  .fc-chip.tight { color:var(--warn); border-color:#fde4b8; background:#fffbf5; }
+/* Project table in week */
+.pth { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; padding:0 4px 6px; font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; border-bottom:1.5px solid var(--border); margin-bottom:4px; }
+.pth span:nth-child(2) { text-align:center; }
+.pe { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; align-items:center; padding:7px 4px; border-bottom:1px solid #f5f4f1; }
+.pen { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; }
+.phi { width:68px; padding:7px 6px; border-radius:8px; border-width:1.5px; border-style:solid; text-align:center; font-size:14px; font-weight:700; font-family:'DM Mono',monospace; outline:none; }
+.warn-row { background:#fff8f3; border-radius:6px; margin:0 -4px; padding:0 4px; }
+.avail-col { text-align:right; }
+.avail-main { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; line-height:1.2; }
+.avail-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+.wtb { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+.bm { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; }
+.bt { height:7px; background:#f0efeb; border-radius:4px; overflow:hidden; }
+.bf { height:100%; border-radius:4px; transition:width .3s; }
+.nb { font-size:11px; color:#ccc; }
 
-  /* ── Split per-day ── */
-  .split-sec { margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--split-border); }
-  .split-sec-title { font-size:11px; font-weight:700; color:var(--split-accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em; }
-  .split-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  .sdt { border-collapse:separate; border-spacing:0; width:100%; min-width:max-content; }
-  .sdt th { font-size:10px; font-weight:700; color:var(--muted); padding:0 5px 8px; text-align:center; white-space:nowrap; }
-  .sdt th.pc { text-align:left; padding-left:2px; text-transform:uppercase; letter-spacing:.05em; min-width:90px; }
-  .sdt th.dm { color:var(--accent); }
-  .sdt th.do { color:#bbb; }
-  .sdt th.tc { color:var(--ink); }
-  .sdt td { padding:4px 4px; vertical-align:middle; }
-  .sdt td.pnc { font-size:12px; font-weight:500; padding-left:2px; }
-  .sdt td.sc { padding:0 4px; }
-  .sdt .sep-line { display:block; width:1px; min-height:24px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
-  .sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
-  .sdt tr.tr td.pnc { text-align:left; color:var(--muted); font-family:'DM Sans',sans-serif; text-transform:uppercase; letter-spacing:.04em; }
-  .dpi { width:50px; padding:5px 3px; border-radius:7px; border-width:1.5px; border-style:solid; text-align:center; font-size:12px; font-weight:700; font-family:'DM Mono',monospace; outline:none; display:block; margin:0 auto; }
-  .dpi.dim { border-color:var(--border) !important; color:#bbb !important; background:#fafaf8 !important; border-style:dashed !important; box-shadow:none !important; }
+/* Forecast */
+.fc-row { margin-top:10px; padding:9px 12px; background:#f7f6f2; border-radius:8px; border:1px solid var(--border); }
+.fc-main { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.fc-lbl { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; }
+.fc-val { font-size:14px; font-weight:700; font-family:'DM Mono',monospace; white-space:nowrap; }
+.fc-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.fc-chip { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; border:1.5px solid var(--border); background:white; color:var(--ink); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
+.fc-chip.over { color:var(--danger); border-color:#f5c6c2; background:#fdf5f5; }
+.fc-chip.tight { color:var(--warn); border-color:#fde4b8; background:#fffbf5; }
 
-  /* ── Year view ── */
-  .year-view { }
-  .year-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:12px; }
-  .year-nav-center { display:flex; align-items:center; gap:8px; }
-  .year-title { font-size:18px; font-weight:700; min-width:60px; text-align:center; }
-  .chart-toggle-btn { display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); cursor:pointer; }
-  .chart-toggle-btn:hover { background:#f1f0ec; }
-  .chart-toggle-btn.active { background:var(--text); color:#f4f3ef; border-color:var(--text); }
+/* Import button */
+.import-gcal-btn { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1.5px solid #bfdbfe; background:#f0f7ff; font-family:inherit; font-size:12px; font-weight:600; color:#1d4ed8; cursor:pointer; }
+.import-gcal-btn:hover { background:#dbeafe; border-color:#93c5fd; }
+.import-gcal-btn:disabled { opacity:.5; cursor:not-allowed; }
 
-  /* Year table */
-  .year-table-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; box-shadow:var(--shadow); margin-bottom:14px; }
-  .year-table { width:max-content; min-width:100%; border-collapse:collapse; font-size:13px; }
-  .year-table th { padding:9px 14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:#fafaf8; border-bottom:1.5px solid var(--border); text-align:right; white-space:nowrap; }
-  .year-table th:first-child { text-align:left; }
-  .year-table td { padding:9px 14px; border-bottom:1px solid #f5f4f1; text-align:right; font-family:'DM Mono',monospace; font-size:13px; white-space:nowrap; }
-  .year-table td:first-child { text-align:left; font-family:'DM Sans',sans-serif; font-weight:600; color:var(--ink); }
-  .year-table tr:last-child td { border-bottom:none; }
-  .year-table tr.total-row td { border-top:1.5px solid var(--border); font-weight:700; background:#fafaf8; }
-  .year-table tr.total-row td:first-child { font-family:'DM Sans',sans-serif; }
-  .year-table td.cur-month { background:#f0f7ff; }
-  .year-table td.over-bud { color:var(--danger); }
-  .year-table th .dot-sm { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px; vertical-align:middle; }
-  .year-table td.zero { color:#d1d0cc; }
+/* Split per-day */
+.split-sec { margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--split-border); }
+.split-sec-title { font-size:11px; font-weight:700; color:var(--split-accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em; }
+.split-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.sdt { border-collapse:separate; border-spacing:0; width:100%; min-width:max-content; }
+.sdt th { font-size:10px; font-weight:700; color:var(--muted); padding:0 5px 8px; text-align:center; white-space:nowrap; }
+.sdt th.pc { text-align:left; padding-left:2px; text-transform:uppercase; letter-spacing:.05em; min-width:90px; }
+.sdt th.dm { color:var(--accent); }
+.sdt th.do { color:#bbb; }
+.sdt th.tc { color:var(--ink); }
+.sdt td { padding:4px; vertical-align:middle; }
+.sdt td.pnc { font-size:12px; font-weight:500; padding-left:2px; }
+.sdt td.sc { padding:0 4px; }
+.sdt .sep-line { display:block; width:1px; min-height:24px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
+.sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
+.sdt tr.tr td.pnc { text-align:left; color:var(--muted); font-family:'DM Sans',sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+.dpi { width:50px; padding:5px 3px; border-radius:7px; border-width:1.5px; border-style:solid; text-align:center; font-size:12px; font-weight:700; font-family:'DM Mono',monospace; outline:none; display:block; margin:0 auto; }
+.dpi.dim { border-color:var(--border)!important; color:#bbb!important; background:#fafaf8!important; border-style:dashed!important; box-shadow:none!important; }
 
-  /* Chart */
-  .chart-section { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow); margin-bottom:14px; }
-  .chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
-  .chart-title { font-size:13px; font-weight:700; color:var(--ink); }
-  .proj-filter { display:flex; flex-wrap:wrap; gap:5px; }
-  .filter-chip { padding:3px 10px; border-radius:20px; border:1.5px solid var(--border); background:white; font-size:11px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; color:var(--muted); transition:all .15s; }
-  .filter-chip.on { color:var(--ink); }
-  .chart-svg-wrap { width:100%; overflow-x:auto; }
+/* Year view */
+.chart-toggle-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); cursor:pointer; }
+.chart-toggle-btn:hover { background:#f1f0ec; }
+.chart-toggle-btn.active { background:var(--text); color:#f4f3ef; border-color:var(--text); }
+.year-table-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; box-shadow:var(--shadow); margin-bottom:14px; }
+.year-table { width:max-content; min-width:100%; border-collapse:collapse; font-size:13px; }
+.year-table th { padding:9px 14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:#fafaf8; border-bottom:1.5px solid var(--border); text-align:right; white-space:nowrap; }
+.year-table th:first-child { text-align:left; }
+.year-table th .dot-sm { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px; vertical-align:middle; }
+.year-table td { padding:9px 14px; border-bottom:1px solid #f5f4f1; text-align:right; font-family:'DM Mono',monospace; white-space:nowrap; }
+.year-table td:first-child { text-align:left; font-family:'DM Sans',sans-serif; font-weight:600; color:var(--ink); }
+.year-table tr:last-child td { border-bottom:none; }
+.year-table tr.total-row td { border-top:1.5px solid var(--border); font-weight:700; background:#fafaf8; }
+.year-table tr.total-row td:first-child { font-family:'DM Sans',sans-serif; }
+.year-table td.cur-month { background:#f0f7ff; }
+.year-table td.over-bud { color:var(--danger); }
+.year-table td.zero { color:#d1d0cc; }
+.chart-section { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow); margin-bottom:14px; }
+.chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
+.chart-title { font-size:13px; font-weight:700; }
+.proj-filter { display:flex; flex-wrap:wrap; gap:5px; }
+.filter-chip { padding:3px 10px; border-radius:20px; border:1.5px solid var(--border); background:white; font-size:11px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; color:var(--muted); }
+.filter-chip.on { color:var(--ink); }
+.chart-svg-wrap { width:100%; overflow-x:auto; }
 
-  /* Summary */
-  .summary { margin-top:14px; padding:16px 20px; background:var(--accent-light); border:1.5px solid #b8d4be; border-radius:12px; }
-  .st { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-  .sl { font-size:15px; font-weight:700; color:var(--success); }
-  .ss { font-size:12px; color:#5a8060; margin-top:2px; }
-  .stot { font-size:28px; font-weight:900; color:var(--success); font-family:'DM Mono',monospace; }
-  .stot span { font-size:14px; font-weight:400; }
-  .sc2 { display:flex; flex-wrap:wrap; gap:7px; }
-  .sc2-chip { display:flex; align-items:center; gap:5px; background:white; border-radius:20px; padding:4px 11px; font-size:12px; font-weight:500; border:1.5px solid transparent; }
+/* Month summary */
+.summary { margin-top:14px; padding:16px 20px; background:var(--accent-light); border:1.5px solid #b8d4be; border-radius:12px; }
+.sc2 { display:flex; flex-wrap:wrap; gap:7px; }
+.sc2-chip { display:flex; align-items:center; gap:5px; background:white; border-radius:20px; padding:4px 11px; font-size:12px; font-weight:500; border:1.5px solid transparent; }
 
-  /* Toast */
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--text); color:#f4f3ef; padding:10px 20px; border-radius:30px; font-size:13px; font-weight:500; opacity:0; transition:opacity .3s; pointer-events:none; z-index:999; }
-  .toast.show { opacity:1; }
-  .empty-msg { text-align:center; color:var(--muted); font-size:13px; padding:8px; }
-  .footer { margin-top:12px; font-size:11px; color:var(--muted); text-align:center; }
+/* Toast */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--text); color:#f4f3ef; padding:10px 20px; border-radius:30px; font-size:13px; font-weight:500; opacity:0; transition:opacity .3s; pointer-events:none; z-index:999; white-space:nowrap; }
+.toast.show { opacity:1; }
+.empty-msg { text-align:center; color:var(--muted); font-size:13px; padding:8px; }
+.footer { margin-top:12px; font-size:11px; color:var(--muted); text-align:center; }
+code { font-family:'DM Mono',monospace; background:#f0efeb; padding:1px 5px; border-radius:3px; font-size:11px; }
 </style>
 </head>
 <body>
@@ -182,51 +186,48 @@ const MONTHS_SHORT=['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt',
 const DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
 const COLORS=['#2d5a3d','#1d4ed8','#b07c00','#7c3aed','#be3a2b','#0891b2','#be185d','#4d7c0f'];
 const LS_KEY='urenregistratie_v3';
+const GCAL_CLIENT_ID='496489196623-41l4utlleu7qs1039seg40uhjc6b99p0.apps.googleusercontent.com';
 
-// ════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════
-const now=new Date();
+// ════════════════════ STATE ════════════════════
+const _now=new Date();
 let S={
-  yr:now.getFullYear(), mo:now.getMonth(),
+  yr:_now.getFullYear(), mo:_now.getMonth(),
   target:40,
   projects:[{id:'p1',name:'Project 1',color:COLORS[0]}],
   budgets:{}, projWeek:{}, projDay:{},
-  // UI state
-  view:'month',       // 'month' | 'year'
-  chartYr:now.getFullYear(),
-  showChart:false,
-  chartFilter:{},     // projId -> false means hidden
-  collapsedWks:{},    // weekKey -> true means collapsed
-  showPanel:false, showData:false, editTarget:false, newName:''
+  // Google Calendar
+  gcalConnected:false, gcalToken:null,
+  gcalMappings:[],   // [{id,keyword,projId}]
+  // UI
+  view:'month', chartYr:_now.getFullYear(),
+  showChart:false, chartFilter:{},
+  collapsedWks:{},
+  showBudgetSummary:true,
+  showPanel:false, showData:false, showGcal:false,
+  editTarget:false, newName:''
 };
 
-// ════════════════════════════════════════
-//  STORAGE
-// ════════════════════════════════════════
+// ════════════════════ STORAGE ════════════════════
 function loadState(){
   try{
     const raw=localStorage.getItem(LS_KEY);
-    if(!raw){
-      const v2=localStorage.getItem('urenregistratie_v2');
-      if(v2){const d=JSON.parse(v2);S.target=d.target??S.target;S.projects=d.projects??S.projects;S.budgets=d.budgets??{};S.projWeek=d.projWeek??{};}
-      return;
-    }
+    if(!raw) return;
     const d=JSON.parse(raw);
-    S.target=d.target??S.target; S.projects=d.projects??S.projects;
-    S.budgets=d.budgets??{}; S.projWeek=d.projWeek??{}; S.projDay=d.projDay??{};
+    ['target','projects','budgets','projWeek','projDay',
+     'gcalMappings','gcalConnected'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
   }catch(e){console.warn(e);}
 }
 function saveState(){
-  try{localStorage.setItem(LS_KEY,JSON.stringify({target:S.target,projects:S.projects,budgets:S.budgets,projWeek:S.projWeek,projDay:S.projDay}));}catch(e){}
+  try{
+    const {target,projects,budgets,projWeek,projDay,gcalMappings,gcalConnected}=S;
+    localStorage.setItem(LS_KEY,JSON.stringify({target,projects,budgets,projWeek,projDay,gcalMappings,gcalConnected}));
+  }catch(e){}
 }
 
-// ════════════════════════════════════════
-//  EXPORT / IMPORT
-// ════════════════════════════════════════
+// ════════════════════ EXPORT / IMPORT ════════════════════
 function exportJSON(){
   const d=new Date();
-  const blob=new Blob([JSON.stringify({exportDatum:d.toISOString(),versie:3,target:S.target,projects:S.projects,budgets:S.budgets,projWeek:S.projWeek,projDay:S.projDay},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({exportDatum:d.toISOString(),versie:3,...(({target,projects,budgets,projWeek,projDay})=>({target,projects,budgets,projWeek,projDay}))(S)},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=`uren-export-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
   a.click();URL.revokeObjectURL(a.href);toast('Exportbestand gedownload ✓');
@@ -239,8 +240,7 @@ function importJSON(){
     r.onload=ev=>{
       try{
         const d=JSON.parse(ev.target.result);if(!d.projects)throw 0;
-        S.target=d.target??S.target;S.projects=d.projects??S.projects;
-        S.budgets=d.budgets??{};S.projWeek=d.projWeek??{};S.projDay=d.projDay??{};
+        ['target','projects','budgets','projWeek','projDay'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
         saveState();render();toast('Data geïmporteerd ✓');
       }catch{alert('Kon het bestand niet importeren.');}
     };r.readAsText(f);
@@ -252,9 +252,7 @@ function clearAllData(){
   S.budgets={};S.projWeek={};S.projDay={};saveState();render();toast('Alle data gewist');
 }
 
-// ════════════════════════════════════════
-//  DATE HELPERS
-// ════════════════════════════════════════
+// ════════════════════ DATE HELPERS ════════════════════
 function getMonday(date){const d=new Date(date),day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));d.setHours(0,0,0,0);return d;}
 function fmt(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function mkey(yr,mo){return`${yr}-${String(mo+1).padStart(2,'0')}`;}
@@ -271,9 +269,7 @@ function weeksOfMonth(yr,mo){
   return weeks;
 }
 
-// ════════════════════════════════════════
-//  CALCULATIONS
-// ════════════════════════════════════════
+// ════════════════════ CALCULATIONS ════════════════════
 function getProjWkHrs(w,pid){
   if(w.split)return w.days.reduce((s,d)=>s+(parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0),0);
   return parseFloat(S.projWeek[`${w.key}|${pid}`])||0;
@@ -285,10 +281,7 @@ function getMonthWkHrs(w){
   return getTotalWkHrs(w);
 }
 function getMonthTotal(weeks){return weeks.reduce((s,w)=>s+getMonthWkHrs(w),0);}
-function getProjBudget(pid,yr,mo){
-  const yr_=yr??S.yr, mo_=mo??S.mo;
-  return parseFloat(S.budgets[mkey(yr_,mo_)]?.[pid])||0;
-}
+function getProjBudget(pid,yr,mo){return parseFloat(S.budgets[mkey(yr??S.yr,mo??S.mo)]?.[pid])||0;}
 function getProjMonthUsedUpTo(pid,upToIdx,weeks){
   let t=0;
   for(let i=0;i<=upToIdx;i++){
@@ -298,28 +291,25 @@ function getProjMonthUsedUpTo(pid,upToIdx,weeks){
   }
   return t;
 }
-function getProjMonthTotal(pid,yr,mo){
-  const weeks=weeksOfMonth(yr??S.yr,mo??S.mo);
-  return getProjMonthUsedUpTo(pid,weeks.length-1,weeks);
-}
-
-// Overrun warning: projected end-of-month > budget
 function getOverrunPids(wIdx,weeks){
-  const at_risk=new Set();
-  if(wIdx<0)return at_risk;
+  const at=new Set();
   S.projects.forEach(p=>{
-    const bud=getProjBudget(p.id);if(bud===0)return;
+    const bud=getProjBudget(p.id);if(!bud)return;
     const used=getProjMonthUsedUpTo(p.id,wIdx,weeks);
-    const elapsed=wIdx+1;
-    const projected=(used/elapsed)*weeks.length;
-    if(projected>bud*1.05)at_risk.add(p.id);
+    if(used>0&&(used/(wIdx+1))*weeks.length>bud*1.05)at.add(p.id);
   });
-  return at_risk;
+  return at;
+}
+function getRemainingWeeks(weeks){
+  const today=new Date();today.setHours(0,0,0,0);
+  for(let i=0;i<weeks.length;i++){
+    const sun=new Date(weeks[i].mon);sun.setDate(sun.getDate()+6);
+    if(sun>=today)return weeks.length-i;
+  }
+  return 0;
 }
 
-// ════════════════════════════════════════
-//  ACTIONS
-// ════════════════════════════════════════
+// ════════════════════ ACTIONS ════════════════════
 function prevMo(){S.mo===0?(S.mo=11,S.yr--):S.mo--;render();}
 function nextMo(){S.mo===11?(S.mo=0,S.yr++):S.mo++;render();}
 function prevChartYr(){S.chartYr--;render();}
@@ -342,42 +332,129 @@ function removeProject(id){
   S.projects=S.projects.filter(p=>p.id!==id);saveState();render();
 }
 
-// ════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════
-let tt;
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2500);}
+// ════════════════════ GOOGLE CALENDAR ════════════════════
+let gcalTokenClient=null;
+
+window.onGsiLoad=function(){
+  if(!window.google)return;
+  try{
+    gcalTokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:GCAL_CLIENT_ID,
+      scope:'https://www.googleapis.com/auth/calendar.readonly',
+      callback:handleGcalToken
+    });
+  }catch(e){console.warn('GSI init failed:',e);}
+};
+
+function handleGcalToken(resp){
+  if(resp.error){toast('Verbinding mislukt: '+resp.error);return;}
+  S.gcalToken=resp.access_token;
+  S.gcalConnected=true;
+  saveState();render();toast('Google Agenda verbonden ✓');
+}
+
+function connectGcal(){
+  if(!window.google){toast('Google bibliotheek laadt nog, probeer opnieuw');return;}
+  if(!gcalTokenClient)window.onGsiLoad();
+  if(!gcalTokenClient){toast('Kon verbinding niet initialiseren');return;}
+  gcalTokenClient.requestAccessToken();
+}
+
+function disconnectGcal(){
+  if(S.gcalToken&&window.google)google.accounts.oauth2.revoke(S.gcalToken,()=>{});
+  S.gcalToken=null;S.gcalConnected=false;saveState();render();toast('Google Agenda ontkoppeld');
+}
+
+function addMapping(){
+  const kw=document.getElementById('new-kw')?.value?.trim();
+  const pid=document.getElementById('new-kw-proj')?.value;
+  if(!kw||!pid){toast('Vul zoekterm en project in');return;}
+  S.gcalMappings.push({id:`m${Date.now()}`,keyword:kw,projId:pid});
+  saveState();render();
+}
+
+function removeMapping(id){
+  S.gcalMappings=S.gcalMappings.filter(m=>m.id!==id);saveState();render();
+}
+
+function getEventDurHrs(ev){
+  if(ev.start?.date)return 0;
+  if(!ev.start?.dateTime)return 0;
+  return(new Date(ev.end.dateTime)-new Date(ev.start.dateTime))/3600000;
+}
+
+async function importWeekFromGcal(weekKey){
+  if(!S.gcalToken){toast('Verbind eerst met Google Agenda');return;}
+  if(!S.gcalMappings.length){toast('Voeg eerst koppelingsregels toe in het Google Agenda paneel');return;}
+  const weeks=weeksOfMonth(S.yr,S.mo);
+  const w=weeks.find(x=>x.key===weekKey);if(!w)return;
+  const btn=document.querySelector(`[data-import="${weekKey}"]`);
+  if(btn){btn.textContent='⏳ Laden…';btn.disabled=true;}
+  const tMin=encodeURIComponent(w.mon.toISOString());
+  const tMax=encodeURIComponent(new Date(w.mon.getTime()+7*864e5).toISOString());
+  let events=[];
+  try{
+    const resp=await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${tMin}&timeMax=${tMax}&singleEvents=true&orderBy=startTime&maxResults=250`,
+      {headers:{Authorization:`Bearer ${S.gcalToken}`}}
+    );
+    if(resp.status===401){S.gcalConnected=false;S.gcalToken=null;saveState();render();toast('Sessie verlopen, verbind opnieuw');return;}
+    events=(await resp.json()).items||[];
+  }catch(e){toast('Fout bij ophalen agenda-events');render();return;}
+  let matched=0;
+  const dayHrs={},wkHrs={};
+  for(const ev of events){
+    const title=(ev.summary||'').toLowerCase();
+    const rule=S.gcalMappings.find(m=>title.includes(m.keyword.toLowerCase()));
+    if(!rule)continue;
+    const dur=floorQ(getEventDurHrs(ev));if(dur<=0)continue;
+    matched++;
+    if(w.split){
+      const day=ev.start.dateTime?fmt(new Date(ev.start.dateTime)):ev.start.date;
+      const k=`${day}|${rule.projId}`;dayHrs[k]=(dayHrs[k]||0)+dur;
+    } else {
+      wkHrs[rule.projId]=(wkHrs[rule.projId]||0)+dur;
+    }
+  }
+  if(matched===0){toast('Geen events gevonden die overeenkomen met de koppelingsregels');render();return;}
+  if(w.split) Object.assign(S.projDay,dayHrs);
+  else Object.entries(wkHrs).forEach(([pid,hrs])=>{S.projWeek[`${weekKey}|${pid}`]=hrs;});
+  saveState();render();toast(`${matched} event${matched!==1?'s':''} geïmporteerd ✓`);
+}
+
+// ════════════════════ UTILS ════════════════════
+let _tt;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2800);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function ha(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
 function sortedProjects(){return[...S.projects].sort((a,b)=>a.name.localeCompare(b.name,'nl'));}
 function floorQ(v){return Math.floor(v*4)/4;}
-function fmtH(v){return v%1===0?v.toFixed(0):v.toFixed(2).replace(/0+$/,'');}
+function fmtH(v){const n=Number(v);if(isNaN(n))return'–';return n%1===0?n.toFixed(0):n.toFixed(2).replace(/\.?0+$/,'');}
 
-// ════════════════════════════════════════
-//  RENDER ENTRY
-// ════════════════════════════════════════
+// ════════════════════ RENDER ════════════════════
 function render(){
   const weeks=weeksOfMonth(S.yr,S.mo);
   const monthTot=getMonthTotal(weeks);
   const cm=mkey(S.yr,S.mo);
+  const isMonth=S.view==='month';
   document.getElementById('app').innerHTML=
-    rHeader(monthTot,weeks)+
-    (S.view==='month'
-      ? rProjPanel(cm,weeks)+rDataPanel()+
+    rHeader(monthTot,isMonth)+
+    rGcalPanel(cm,weeks)+
+    rProjPanel(cm,weeks)+
+    rDataPanel()+
+    (isMonth
+      ? rBudgetSummary(weeks)+
         `<div class="weeks">${weeks.map((w,i)=>rWeek(w,weeks,i)).join('')}</div>`+
         rSummary(weeks)
-      : rProjPanel(cm,weeks)+rDataPanel()+rYear()
+      : rYear()
     )+
     `<div class="footer">Data wordt automatisch opgeslagen in je browser &nbsp;·&nbsp; Klik op weekdoel om aan te passen</div>`;
   if(S.editTarget){const i=document.getElementById('tgt-inp');if(i){i.focus();i.select();}}
   if(S.showPanel){const i=document.getElementById('npi');if(i)i.value=S.newName;}
 }
 
-// ════════════════════════════════════════
-//  HEADER
-// ════════════════════════════════════════
-function rHeader(tot,weeks){
-  const isMonth=S.view==='month';
+// ════════════════════ HEADER ════════════════════
+function rHeader(tot,isMonth){
   const navL=isMonth?`<button class="nav-btn" onclick="prevMo()">‹</button>`:`<button class="nav-btn" onclick="prevChartYr()">‹</button>`;
   const navR=isMonth?`<button class="nav-btn" onclick="nextMo()">›</button>`:`<button class="nav-btn" onclick="nextChartYr()">›</button>`;
   const title=isMonth?`${MONTHS[S.mo]} ${S.yr}`:S.chartYr;
@@ -406,9 +483,128 @@ function rHeader(tot,weeks){
   </div>`;
 }
 
-// ════════════════════════════════════════
-//  PROJECT PANEL
-// ════════════════════════════════════════
+// ════════════════════ BUDGET SUMMARY ════════════════════
+function rBudgetSummary(weeks){
+  const sp=sortedProjects().filter(p=>getProjBudget(p.id)>0);
+  if(sp.length===0)return'';
+  const remWks=getRemainingWeeks(weeks);
+  const totalUsed=getMonthTotal(weeks);
+  const totalBud=sp.reduce((s,p)=>s+getProjBudget(p.id),0);
+  const totalRem=totalBud-totalUsed;
+
+  let body='';
+  if(S.showBudgetSummary){
+    const rows=sp.map(p=>{
+      const bud=getProjBudget(p.id);
+      const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);
+      const rem=bud-used;
+      const ppw=remWks>0?floorQ(rem/remWks):null;
+      const bp=bud>0?Math.min(100,(used/bud)*100):0;
+      const rc=rem<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
+      return`<tr>
+        <td><div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>
+        <td style="color:var(--muted)">${fmtH(bud)} u</td>
+        <td>${fmtH(used)} u</td>
+        <td style="color:${rem<0?'var(--danger)':'var(--ink)'}">${fmtH(rem)} u</td>
+        <td style="font-weight:700;color:${rc}">${ppw!==null?fmtH(ppw)+' u/wk':'–'}</td>
+      </tr>`;
+    }).join('');
+    const bpTot=totalBud>0?Math.min(100,(totalUsed/totalBud)*100):0;
+    body=`<div class="pbody" style="padding-bottom:12px">
+      <table class="bsum-table">
+        <thead><tr>
+          <th>Project</th>
+          <th>Budget</th>
+          <th>Gebruikt</th>
+          <th>Resterend</th>
+          <th>Per week*</th>
+        </tr></thead>
+        <tbody>
+          ${rows}
+          <tr class="bsum-total">
+            <td>Totaal</td>
+            <td style="color:var(--muted)">${fmtH(totalBud)} u</td>
+            <td>${fmtH(totalUsed)} u</td>
+            <td style="color:${totalRem<0?'var(--danger)':'var(--ink)'}">${fmtH(totalRem)} u</td>
+            <td style="color:${totalRem<0?'var(--danger)':'var(--success)'};font-weight:700">${remWks>0?fmtH(floorQ(totalRem/remWks))+' u/wk':'–'}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="bsum-note">* Afgerond naar beneden op kwartier · Gebaseerd op ${remWks} resterende week${remWks!==1?'en':''} (inclusief huidige)</div>
+    </div>`;
+  }
+
+  return`<div class="panel" style="border-color:#c8e6d4">
+    <button class="ptoggle ${S.showBudgetSummary?'open':''}" onclick="S.showBudgetSummary=!S.showBudgetSummary;render()" style="background:${S.showBudgetSummary?'#f0fdf4':''}">
+      <div class="ptl">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span style="color:var(--success);font-weight:700">Budgetoverzicht — ${MONTHS[S.mo]}</span>
+        <span style="font-size:11px;color:var(--muted);font-weight:400">${fmtH(totalUsed)} / ${fmtH(totalBud)} u gebruikt</span>
+      </div>
+      <span>${S.showBudgetSummary?'▲':'▼'}</span>
+    </button>${body}
+  </div>`;
+}
+
+// ════════════════════ GOOGLE CALENDAR PANEL ════════════════════
+function rGcalPanel(cm,weeks){
+  let body='';
+  if(S.showGcal){
+    const projOpts=sortedProjects().map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+    const connStatus=S.gcalConnected
+      ?`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f0fdf4;border:1.5px solid #b8d4be;border-radius:9px;margin-bottom:14px">
+          <span style="font-size:13px;font-weight:600;color:var(--success)">● Verbonden met Google Agenda</span>
+          <button class="data-btn danger" onclick="disconnectGcal()" style="padding:5px 12px;font-size:12px">Ontkoppelen</button>
+        </div>`
+      :`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fafaf8;border:1.5px solid var(--border);border-radius:9px;margin-bottom:14px">
+          <span style="font-size:13px;color:var(--muted)">○ Niet verbonden</span>
+          <button class="add-btn" onclick="connectGcal()">Verbinden met Google Agenda</button>
+        </div>`;
+    const mappingRows=S.gcalMappings.map(m=>{
+      const p=S.projects.find(x=>x.id===m.projId);
+      return`<div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #f5f4f1">
+        <span style="font-size:13px">Events met <strong>"${esc(m.keyword)}"</strong></span>
+        <span style="font-size:13px;display:flex;align-items:center;gap:6px">
+          → ${p?`<div class="dot" style="background:${p.color}"></div>${esc(p.name)}`:'Onbekend'}
+        </span>
+        <button class="del-btn" onclick="removeMapping('${m.id}')">✕</button>
+      </div>`;
+    }).join('');
+    body=`<div class="pbody">
+      ${connStatus}
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Koppelingsregels (eventnaam → project)</div>
+      ${S.gcalMappings.length===0?`<div class="empty-msg" style="padding:6px 0;text-align:left">Nog geen regels.</div>`:mappingRows}
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;margin-top:10px">
+        <input class="add-input" id="new-kw" type="text" placeholder="Zoekterm (bijv. standup)" style="font-size:12px">
+        <select id="new-kw-proj" style="padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);font-family:inherit;font-size:13px;outline:none;background:white">
+          <option value="">Kies project…</option>${projOpts}
+        </select>
+        <button class="add-btn" onclick="addMapping()">+</button>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6">
+        Events worden gematcht op eventnaam (niet hoofdlettergevoelig). Duur afgerond op kwartieren.
+        Hele-dag events worden overgeslagen. Je kunt uren daarna gewoon handmatig aanpassen.
+      </div>
+    </div>`;
+  }
+  return`<div class="panel">
+    <button class="ptoggle ${S.showGcal?'open':''}" onclick="S.showGcal=!S.showGcal;render()">
+      <div class="ptl">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Google Agenda koppeling
+        ${S.gcalConnected?'<span style="font-size:11px;color:var(--success);font-weight:600;margin-left:2px">● Verbonden</span>':''}
+      </div>
+      <span>${S.showGcal?'▲':'▼'}</span>
+    </button>${body}
+  </div>`;
+}
+
+// ════════════════════ PROJECT PANEL ════════════════════
 function rProjPanel(cm,weeks){
   let body='';
   if(S.showPanel){
@@ -449,12 +645,11 @@ function rProjPanel(cm,weeks){
           <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
         </svg>Projecten &amp; Maandbudget — ${MONTHS[S.mo]}
       </div><span>${S.showPanel?'▲':'▼'}</span>
-    </button>${body}</div>`;
+    </button>${body}
+  </div>`;
 }
 
-// ════════════════════════════════════════
-//  DATA PANEL
-// ════════════════════════════════════════
+// ════════════════════ DATA PANEL ════════════════════
 function rDataPanel(){
   let body='';
   if(S.showData){
@@ -479,12 +674,11 @@ function rDataPanel(){
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
         Data &amp; Back-up
       </div><span>${S.showData?'▲':'▼'}</span>
-    </button>${body}</div>`;
+    </button>${body}
+  </div>`;
 }
 
-// ════════════════════════════════════════
-//  WEEK CARD
-// ════════════════════════════════════════
+// ════════════════════ WEEK CARD ════════════════════
 function rWeek(w,weeks,wIdx){
   const collapsed=!!S.collapsedWks[w.key];
   const totalHrs=getTotalWkHrs(w);
@@ -493,23 +687,17 @@ function rWeek(w,weeks,wIdx){
   const rc=rem<0?'var(--danger)':rem===0?'var(--success)':'var(--ink)';
   const dr=`${w.inM[0].getDate()} – ${w.inM[w.inM.length-1].getDate()} ${MONTHS[S.mo]}`;
   const rs=rem>0?`Nog ${fmtH(rem)} u`:rem<0?`${fmtH(Math.abs(rem))} u over`:'✓ Compleet';
-
-  // Overrun check
   const overrunPids=getOverrunPids(wIdx,weeks);
   const hasOverrun=overrunPids.size>0;
-
   const remWks=weeks.length-(wIdx+1);
   const visProjects=sortedProjects().filter(p=>getProjBudget(p.id)>0);
-
-  // Badge in header
-  const overrunBadge=hasOverrun?`<span class="warn-badge">⚠ ${overrunPids.size} project${overrunPids.size>1?'en':''} dreigt budget te overschrijden</span>`:'';
 
   const head=`<div class="week-head" onclick="toggleWk('${w.key}')">
     <div class="whl">
       <span class="week-num">Week ${w.wk}</span>
       <span class="week-dates">${dr}</span>
       ${w.split?`<span class="split-badge">✂ Gesplitst</span>`:''}
-      ${overrunBadge}
+      ${hasOverrun?`<span class="warn-badge">⚠ ${overrunPids.size} project${overrunPids.size>1?'en':''} dreigt over budget</span>`:''}
     </div>
     <div class="whr">
       <span style="color:var(--muted);font-size:13px">Totaal: <strong style="color:var(--ink)">${fmtH(totalHrs)} u</strong></span>
@@ -518,24 +706,21 @@ function rWeek(w,weeks,wIdx){
     </div>
   </div>`;
 
-  if(collapsed){
-    return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''} collapsed">${head}</div>`;
-  }
+  if(collapsed) return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''} collapsed">${head}</div>`;
 
-  // ── Project rows ──
+  // Project rows
   let pc='';
   if(visProjects.length===0){
-    pc=`<div class="empty-msg">${S.projects.length===0?'Voeg projecten toe via het paneel hierboven.':'Stel een maandbudget in voor je projecten om uren in te vullen.'}</div>`;
+    pc=`<div class="empty-msg">${S.projects.length===0?'Voeg projecten toe via het paneel hierboven.':'Stel een maandbudget in om uren in te vullen.'}</div>`;
   } else {
-    const tableHead=`<div class="pth"><span>Project</span><span>Uren week</span><span>Beschikbaar / week</span></div>`;
+    const thead=`<div class="pth"><span>Project</span><span>Uren week</span><span>Beschikbaar / week</span></div>`;
     const rows=visProjects.map(p=>{
       const wkH=getProjWkHrs(w,p.id);
       const used=getProjMonthUsedUpTo(p.id,wIdx,weeks);
       const bud=getProjBudget(p.id);
       const rb=bud-used;
-      const ppwRaw=bud>0&&remWks>0?rb/remWks:null;
-      const ppw=ppwRaw!==null?floorQ(ppwRaw):null;
-      const isOverrun=overrunPids.has(p.id);
+      const ppw=bud>0&&remWks>0?floorQ(rb/remWks):null;
+      const isOver=overrunPids.has(p.id);
       const pc3col=rb<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
       const inp=w.split
         ?`<span style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'} u</span>`
@@ -543,32 +728,31 @@ function rWeek(w,weeks,wIdx){
             type="number" min="0" step="0.25" value="${S.projWeek[`${w.key}|${p.id}`]??''}" placeholder="0"
             onchange="setProjHrs('${w.key}','${p.id}',this.value)"
             onfocus="this.style.boxShadow='0 0 0 3px ${ha(p.color,.2)}'" onblur="this.style.boxShadow='none'">`;
-      const col3=bud>0
-        ?`<div class="avail-col">
-            <div class="avail-main" style="color:${isOverrun?'var(--warn)':pc3col}">
+      return`<div class="pe ${isOver?'warn-row':''}">
+        <div class="pen"><div class="dot" style="background:${p.color}"></div><span>${esc(p.name)}</span></div>
+        <div style="text-align:center">${inp}</div>
+        <div class="avail-col">
+          ${bud>0?`
+            <div class="avail-main" style="color:${isOver?'var(--warn)':pc3col}">
               ${ppw!==null?fmtH(ppw)+' u/wk':rb>=0?fmtH(rb)+' u':fmtH(Math.abs(rb))+' te veel'}
-              ${isOverrun?`<span class="warn-icon" title="Dreigt budget te overschrijden">⚠</span>`:''}
+              ${isOver?`<span style="font-size:12px" title="Dreigt over budget">⚠</span>`:''}
             </div>
             <div class="avail-sub">
               ${rb>=0?fmtH(rb)+' u resterend':fmtH(Math.abs(rb))+' u over budget'}
               ${remWks>0?' · '+remWks+' wk':''}
-            </div>
-          </div>`
-        :`<span class="nb">Geen budget ingesteld</span>`;
-      return`<div class="pe ${isOverrun?'warn-row':''}">
-        <div class="pen"><div class="dot" style="background:${p.color}"></div><span>${esc(p.name)}</span></div>
-        <div style="text-align:center">${inp}</div>
-        <div>${col3}</div>
+            </div>`
+          :`<span class="nb">Geen budget</span>`}
+        </div>
       </div>`;
     }).join('');
     const tb=`<div class="wtb">
       <div class="bm"><span>${fmtH(totalHrs)} u van ${S.target} u weekdoel</span><span>${pct.toFixed(0)}%</span></div>
       <div class="bt"><div class="bf" style="width:${pct}%;background:${totalHrs>=S.target?'var(--success)':'var(--ink)'}"></div></div>
     </div>`;
-    pc=tableHead+rows+tb;
+    pc=thead+rows+tb;
   }
 
-  // ── Forecast ──
+  // Forecast
   const mBud=S.target*weeks.length;
   const usedSoFar=weeks.slice(0,wIdx+1).reduce((s,wk)=>s+getMonthWkHrs(wk),0);
   const remMonth=mBud-usedSoFar;
@@ -579,18 +763,17 @@ function rWeek(w,weeks,wIdx){
     const vc=perWk===null?'var(--muted)':perWk<0?'var(--danger)':perWk<S.target*.6?'var(--warn)':'var(--success)';
     const mainLine=remWksF===0
       ?`<span class="fc-lbl">Laatste week van de maand</span>
-         <span class="fc-val" style="color:var(--muted)">${remMonth>=0?fmtH(remMonth)+' u resterend':fmtH(Math.abs(remMonth))+' u te veel'}</span>`
+        <span class="fc-val" style="color:var(--muted)">${remMonth>=0?fmtH(remMonth)+' u resterend':fmtH(Math.abs(remMonth))+' u te veel'}</span>`
       :`<span class="fc-lbl">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Na deze week: ${remMonth>=0?fmtH(remMonth)+' u resterend':fmtH(Math.abs(remMonth))+' u te veel'} over ${remWksF} week${remWksF>1?'en':''}
+          Na deze week: ${remMonth>=0?fmtH(remMonth)+' u over '+remWksF+' week'+(remWksF>1?'en':''):fmtH(Math.abs(remMonth))+' u te veel'}
         </span>
         ${perWk!==null?`<span class="fc-val" style="color:${vc}">${fmtH(perWk)} u/week</span>`:''}`;
     const chips=sortedProjects().map(p=>{
-      const bud=getProjBudget(p.id);if(bud===0)return'';
+      const bud=getProjBudget(p.id);if(!bud)return'';
       const pu=getProjMonthUsedUpTo(p.id,wIdx,weeks);
-      const pr=bud-pu;
       const bp=Math.min(100,(pu/bud)*100);
-      const cls=pr<0?'over':bp>80?'tight':'';
+      const cls=pu>bud?'over':bp>80?'tight':'';
       return`<span class="fc-chip ${cls}">
         <span class="dot" style="background:${p.color};width:7px;height:7px;flex-shrink:0"></span>
         ${esc(p.name)}: ${fmtH(pu)} / ${fmtH(bud)} u <span style="opacity:.5;font-size:10px">(${bp.toFixed(0)}%)</span>
@@ -599,7 +782,16 @@ function rWeek(w,weeks,wIdx){
     fcHtml=`<div class="fc-row"><div class="fc-main">${mainLine}</div>${chips?`<div class="fc-chips">${chips}</div>`:''}</div>`;
   }
 
-  // ── Split per-day project table ──
+  // Google Calendar import button
+  const importBtn=S.gcalConnected
+    ?`<button class="import-gcal-btn" data-import="${w.key}" onclick="importWeekFromGcal('${w.key}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>Importeer uit Google Agenda
+      </button>`:'' ;
+
+  // Split per-day table
   let splitSec='';
   if(w.split&&visProjects.length>0){
     const inMN=MONTHS[S.mo];
@@ -607,189 +799,123 @@ function rWeek(w,weeks,wIdx){
     const dayTh=(days,cls)=>days.map(d=>{const di=(d.getDay()+6)%7;return`<th class="${cls}" style="min-width:54px">${DAYS[di]}<br><span style="font-weight:400;opacity:.65">${d.getDate()}</span></th>`;}).join('');
     const thead=`<tr><th class="pc">Project</th>${dayTh(w.inM,'dm')}${w.outM.length>0?`<th class="sc" style="width:14px"></th>${dayTh(w.outM,'do')}`:''}  <th class="tc">Week</th></tr>`;
     const projRows=visProjects.map(p=>{
-      const inCells=w.inM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color};background:${ha(p.color,.05)}" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)" onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.25)}'" onblur="this.style.boxShadow='none'"></td>`;}).join('');
-      const outCells=w.outM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)"></td>`;}).join('');
+      const inC=w.inM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color};background:${ha(p.color,.05)}" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)" onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.25)}'" onblur="this.style.boxShadow='none'"></td>`;}).join('');
+      const outC=w.outM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)"></td>`;}).join('');
       const wt=getProjWkHrs(w,p.id);
-      return`<tr><td class="pnc"><div style="display:flex;align-items:center;gap:6px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>${inCells}${w.outM.length>0?`<td class="sc"><span class="sep-line"></span></td>${outCells}`:''}<td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wt>0?fmtH(wt):'–'}</td></tr>`;
+      return`<tr><td class="pnc"><div style="display:flex;align-items:center;gap:6px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>${inC}${w.outM.length>0?`<td class="sc"><span class="sep-line"></span></td>${outC}`:''}<td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wt>0?fmtH(wt):'–'}</td></tr>`;
     }).join('');
-    const dayTotCells=days=>days.map(d=>{const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);return`<td>${t>0?fmtH(t):'–'}</td>`;}).join('');
+    const dayTotC=days=>days.map(d=>{const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);return`<td>${t>0?fmtH(t):'–'}</td>`;}).join('');
     const gTot=getTotalWkHrs(w);
-    const totRow=`<tr class="tr"><td class="pnc">Dag totaal</td>${dayTotCells(w.inM)}${w.outM.length>0?`<td class="sc"></td>${dayTotCells(w.outM)}`:''}<td>${gTot>0?fmtH(gTot):'–'}</td></tr>`;
-    const moLblRow=`<tr><td></td><td colspan="${w.inM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${inMN} ↑</td>${w.outM.length>0?`<td class="sc"></td><td colspan="${w.outM.length}" style="text-align:center;font-size:10px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${outMN} ↑</td>`:''}<td></td></tr>`;
-    splitSec=`<div class="split-sec"><div class="split-sec-title">✂ Dagelijkse projecturen — gesplitste week</div><div class="split-scroll"><table class="sdt"><thead>${thead}</thead><tbody>${projRows}${totRow}${moLblRow}</tbody></table></div></div>`;
+    splitSec=`<div class="split-sec">
+      <div class="split-sec-title">✂ Dagelijkse projecturen — gesplitste week</div>
+      <div class="split-scroll"><table class="sdt">
+        <thead><tr><th class="pc">Project</th>${dayTh(w.inM,'dm')}${w.outM.length>0?`<th class="sc"></th>${dayTh(w.outM,'do')}`:''}  <th class="tc">Week</th></tr></thead>
+        <tbody>
+          ${projRows}
+          <tr class="tr"><td class="pnc">Dag totaal</td>${dayTotC(w.inM)}${w.outM.length>0?`<td class="sc"></td>${dayTotC(w.outM)}`:''}<td>${gTot>0?fmtH(gTot):'–'}</td></tr>
+          <tr><td></td><td colspan="${w.inM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${inMN} ↑</td>${w.outM.length>0?`<td class="sc"></td><td colspan="${w.outM.length}" style="text-align:center;font-size:10px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${outMN} ↑</td>`:''}<td></td></tr>
+        </tbody>
+      </table></div>
+    </div>`;
   }
 
   return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''}">
     ${head}
-    <div class="week-body">${pc}${fcHtml}${splitSec}</div>
+    <div class="week-body">${pc}${fcHtml}${importBtn}${splitSec}</div>
   </div>`;
 }
 
-// ════════════════════════════════════════
-//  MONTH SUMMARY
-// ════════════════════════════════════════
+// ════════════════════ MONTH SUMMARY ════════════════════
 function rSummary(weeks){
   const total=getMonthTotal(weeks);
   const chips=sortedProjects().map(p=>{
-    const bud=getProjBudget(p.id);if(bud===0)return'';
+    const bud=getProjBudget(p.id);if(!bud)return'';
     const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);
     const rem=bud-used;
     return`<div class="sc2-chip" style="border-color:${ha(p.color,.25)}">
       <div style="width:8px;height:8px;border-radius:50%;background:${p.color}"></div>
       <span>${esc(p.name)}:</span>
-      <span style="font-weight:700;color:${rem<0?'var(--danger)':rem<bud*.1?'var(--warn)':'var(--ink)'}">
-        ${fmtH(used)} / ${fmtH(bud)} u</span>
+      <span style="font-weight:700;color:${rem<0?'var(--danger)':rem<bud*.1?'var(--warn)':'var(--ink)'}">${fmtH(used)} / ${fmtH(bud)} u</span>
     </div>`;
   }).filter(Boolean).join('');
   return`<div class="summary">
-    <div class="st">
-      <div><div class="sl">Maandtotaal ${MONTHS[S.mo]}</div><div class="ss">Gebaseerd op projecturen</div></div>
-      <div class="stot">${fmtH(total)}<span> uur</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${chips?'12px':'0'}">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--success)">Maandtotaal ${MONTHS[S.mo]}</div>
+        <div style="font-size:12px;color:#5a8060;margin-top:2px">Gebaseerd op projecturen</div>
+      </div>
+      <div style="font-size:28px;font-weight:900;color:var(--success);font-family:'DM Mono',monospace">${fmtH(total)}<span style="font-size:14px;font-weight:400"> uur</span></div>
     </div>
     ${chips?`<div class="sc2">${chips}</div>`:''}
   </div>`;
 }
 
-// ════════════════════════════════════════
-//  YEAR VIEW
-// ════════════════════════════════════════
+// ════════════════════ YEAR VIEW ════════════════════
 function rYear(){
   const yr=S.chartYr;
   const sp=sortedProjects();
-
-  // Build monthly data
   const monthData=Array.from({length:12},(_,mo)=>{
-    const weeks=weeksOfMonth(yr,mo);
+    const wks=weeksOfMonth(yr,mo);
     const byProj={};
-    sp.forEach(p=>{byProj[p.id]=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);});
-    const total=Object.values(byProj).reduce((s,v)=>s+v,0);
-    return{mo,byProj,total};
+    sp.forEach(p=>{byProj[p.id]=getProjMonthUsedUpTo(p.id,wks.length-1,wks);});
+    return{mo,byProj,total:Object.values(byProj).reduce((s,v)=>s+v,0)};
   });
-
-  // Only show projects that have any hours or any budget this year
-  const activeProjs=sp.filter(p=>
-    Array.from({length:12},(_,mo)=>getProjBudget(p.id,yr,mo)+monthData[mo].byProj[p.id]).some(v=>v>0)
-  );
-
-  // Year totals per project
+  const activeProjs=sp.filter(p=>Array.from({length:12},(_,mo)=>getProjBudget(p.id,yr,mo)+monthData[mo].byProj[p.id]).some(v=>v>0));
   const yearTotByProj={};
   activeProjs.forEach(p=>{yearTotByProj[p.id]=monthData.reduce((s,m)=>s+m.byProj[p.id],0);});
   const yearTot=monthData.reduce((s,m)=>s+m.total,0);
-
-  const curMo=new Date().getMonth();
-  const curYr=new Date().getFullYear();
-
-  // Table headers
+  const cMo=new Date().getMonth(),cYr=new Date().getFullYear();
   const thCols=activeProjs.map(p=>`<th><span class="dot-sm" style="background:${p.color}"></span>${esc(p.name)}</th>`).join('');
-
-  // Table rows
   const rows=monthData.map(({mo,byProj,total})=>{
-    const isCur=yr===curYr&&mo===curMo;
-    const cells=activeProjs.map(p=>{
-      const v=byProj[p.id];
-      const bud=getProjBudget(p.id,yr,mo);
-      const overBud=bud>0&&v>bud;
-      return`<td class="${isCur?'cur-month':''} ${overBud?'over-bud':''} ${v===0?'zero':''}">${v>0?fmtH(v):'–'}</td>`;
-    }).join('');
-    return`<tr>
-      <td class="${isCur?'cur-month':''}">${MONTHS_SHORT[mo]}</td>
-      ${cells}
-      <td class="${isCur?'cur-month':''} ${total===0?'zero':''}" style="font-weight:700">${total>0?fmtH(total):'–'}</td>
-    </tr>`;
+    const isCur=yr===cYr&&mo===cMo;
+    const cells=activeProjs.map(p=>{const v=byProj[p.id];const bud=getProjBudget(p.id,yr,mo);return`<td class="${isCur?'cur-month':''} ${bud>0&&v>bud?'over-bud':''} ${v===0?'zero':''}">${v>0?fmtH(v):'–'}</td>`;}).join('');
+    return`<tr><td class="${isCur?'cur-month':''}">${MONTHS_SHORT[mo]}</td>${cells}<td class="${isCur?'cur-month':''} ${total===0?'zero':''}" style="font-weight:700">${total>0?fmtH(total):'–'}</td></tr>`;
   }).join('');
-
-  // Total row
-  const totCells=activeProjs.map(p=>`<td style="color:${S.projects.find(x=>x.id===p.id)?.color||'inherit'}">${yearTotByProj[p.id]>0?fmtH(yearTotByProj[p.id]):'–'}</td>`).join('');
-
-  const table=`<div class="year-table-wrap">
-    <table class="year-table">
-      <thead><tr><th>Maand</th>${thCols}<th>Totaal</th></tr></thead>
-      <tbody>
-        ${rows}
-        <tr class="total-row">
-          <td>Totaal</td>${totCells}
-          <td style="font-weight:900">${yearTot>0?fmtH(yearTot):'–'}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>`;
-
-  const chartBtn=`<button class="chart-toggle-btn ${S.showChart?'active':''}" onclick="toggleChart()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
-    ${S.showChart?'Grafiek verbergen':'Grafiek tonen'}
-  </button>`;
-
+  const totCells=activeProjs.map(p=>`<td style="color:${p.color}">${yearTotByProj[p.id]>0?fmtH(yearTotByProj[p.id]):'–'}</td>`).join('');
   const chart=S.showChart?rChart(activeProjs,monthData):'';
-
-  return`<div class="year-view">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">${chartBtn}</div>
+  return`<div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="chart-toggle-btn ${S.showChart?'active':''}" onclick="toggleChart()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+        ${S.showChart?'Grafiek verbergen':'Grafiek tonen'}
+      </button>
+    </div>
     ${chart}
-    ${table}
+    <div class="year-table-wrap">
+      <table class="year-table">
+        <thead><tr><th>Maand</th>${thCols}<th>Totaal</th></tr></thead>
+        <tbody>${rows}<tr class="total-row"><td>Totaal</td>${totCells}<td style="font-weight:900">${yearTot>0?fmtH(yearTot):'–'}</td></tr></tbody>
+      </table>
+    </div>
   </div>`;
 }
 
-// ════════════════════════════════════════
-//  BAR CHART (SVG)
-// ════════════════════════════════════════
+// ════════════════════ BAR CHART ════════════════════
 function rChart(activeProjs,monthData){
-  // Filter by chartFilter
   const visProjs=activeProjs.filter(p=>S.chartFilter[p.id]!==false);
-
-  // Filter chips
   const chips=activeProjs.map(p=>{
     const on=S.chartFilter[p.id]!==false;
     return`<span class="filter-chip ${on?'on':''}" onclick="toggleProjFilter('${p.id}')" style="${on?`border-color:${ha(p.color,.4)};background:${ha(p.color,.08)}`:''}">
-      <span class="dot" style="background:${on?p.color:'#ccc'};width:8px;height:8px"></span>
-      ${esc(p.name)}
-    </span>`;
+      <span class="dot" style="background:${on?p.color:'#ccc'};width:8px;height:8px"></span>${esc(p.name)}</span>`;
   }).join('');
-
-  // SVG dimensions
   const W=640,H=240,mL=42,mR=12,mT=12,mB=36;
-  const cW=W-mL-mR, cH=H-mT-mB;
-  const nMo=12, barW=Math.floor(cW/nMo*0.6), gap=cW/nMo;
-
-  // Max value for Y scale
+  const cW=W-mL-mR,cH=H-mT-mB,gap=cW/12,barW=Math.floor(gap*.6);
   const maxVal=Math.max(...monthData.map(m=>visProjs.reduce((s,p)=>s+m.byProj[p.id],0)),1);
-  const yTicks=5;
-  const yStep=Math.ceil(maxVal/yTicks/5)*5||1;
-  const yMax=yStep*yTicks;
-  const yScale=cH/yMax;
-
-  // Grid + Y axis
-  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;font-family:'DM Sans',sans-serif">`;
-
-  // Grid lines + Y labels
-  for(let i=0;i<=yTicks;i++){
+  const yStep=Math.ceil(maxVal/5/5)*5||1,yMax=yStep*5,yScale=cH/yMax;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block">`;
+  for(let i=0;i<=5;i++){
     const y=mT+cH-i*yStep*yScale;
-    const val=i*yStep;
     svg+=`<line x1="${mL}" y1="${y}" x2="${mL+cW}" y2="${y}" stroke="#e8e6e0" stroke-width="${i===0?1.5:.75}"/>`;
-    svg+=`<text x="${mL-6}" y="${y+4}" font-size="10" fill="#8a8780" text-anchor="end">${val}</text>`;
+    svg+=`<text x="${mL-6}" y="${y+4}" font-size="10" fill="#8a8780" text-anchor="end" font-family="DM Sans,sans-serif">${i*yStep}</text>`;
   }
-
-  // Bars
   monthData.forEach(({mo,byProj},mi)=>{
-    const x=mL+mi*gap+(gap-barW)/2;
-    let stackY=mT+cH;
-    visProjs.forEach(p=>{
-      const v=byProj[p.id];
-      if(v<=0)return;
-      const barH=v*yScale;
-      stackY-=barH;
-      svg+=`<rect x="${x}" y="${stackY}" width="${barW}" height="${barH}" fill="${p.color}" rx="2" opacity=".85"/>`;
-    });
-    // Month label
-    svg+=`<text x="${x+barW/2}" y="${mT+cH+16}" font-size="10" fill="#8a8780" text-anchor="middle">${MONTHS_SHORT[mo]}</text>`;
-    // Total label on top if >0
+    const x=mL+mi*gap+(gap-barW)/2;let sy=mT+cH;
+    visProjs.forEach(p=>{const v=byProj[p.id];if(v<=0)return;const bh=v*yScale;sy-=bh;svg+=`<rect x="${x}" y="${sy}" width="${barW}" height="${bh}" fill="${p.color}" rx="2" opacity=".85"/>`;});
+    svg+=`<text x="${x+barW/2}" y="${mT+cH+16}" font-size="10" fill="#8a8780" text-anchor="middle" font-family="DM Sans,sans-serif">${MONTHS_SHORT[mo]}</text>`;
     const tot=visProjs.reduce((s,p)=>s+byProj[p.id],0);
-    if(tot>0){
-      const topY=mT+cH-tot*yScale-4;
-      svg+=`<text x="${x+barW/2}" y="${topY}" font-size="9" fill="#3d3b36" text-anchor="middle" font-weight="600">${fmtH(tot)}</text>`;
-    }
+    if(tot>0)svg+=`<text x="${x+barW/2}" y="${mT+cH-tot*yScale-4}" font-size="9" fill="#3d3b36" text-anchor="middle" font-weight="600" font-family="DM Sans,sans-serif">${fmtH(tot)}</text>`;
   });
-
   svg+=`</svg>`;
-
   return`<div class="chart-section">
     <div class="chart-header">
       <span class="chart-title">Uren per maand — ${S.chartYr}</span>
@@ -799,9 +925,7 @@ function rChart(activeProjs,monthData){
   </div>`;
 }
 
-// ════════════════════════════════════════
-//  START
-// ════════════════════════════════════════
+// ════════════════════ START ════════════════════
 loadState();
 render();
 </script>
