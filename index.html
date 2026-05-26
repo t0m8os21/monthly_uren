@@ -3,49 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Urenregistraties</title>
+<title>Urenregistratie</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23c0392b' d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async onload="onGsiLoad()"></script>
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
-/* ── Light mode ── */
 :root {
   --bg:#f4f3ef; --surface:#fff; --border:#e8e6e0;
   --text:#1a1916; --muted:#8a8780; --ink:#3d3b36;
   --accent:#2d5a3d; --accent-light:#e8f0ea;
-  --surface2:#fafaf8; --surface3:#f5f4f1;
-  --split-bg:#fef8ec; --split-border:#f0c84a; --split-accent:#b07c00;
+  --surface2:#fafaf8; --surface3:#f3f2ee;
+  --split-border:#f0c84a; --split-accent:#b07c00;
   --danger:#c0392b; --warn:#d4760a; --success:#2d5a3d;
   --header-bg:#1a1916; --header-fg:#f4f3ef;
-  --input-bg:#fff; --select-bg:#fff;
+  --input-bg:#fff;
 }
-
-/* ── Dark mode ── */
 body.dark {
   --bg:#111010; --surface:#1c1b19; --border:#2e2c28;
   --text:#ede9e2; --muted:#706e68; --ink:#c8c5be;
   --accent:#4d9065; --accent-light:#172318;
-  --surface2:#242220; --surface3:#2a2825;
-  --split-bg:#1f1c10; --split-border:#8a6a00; --split-accent:#d4960a;
+  --surface2:#242220; --surface3:#2c2a27;
+  --split-border:#8a6a00; --split-accent:#d4960a;
   --danger:#e05545; --warn:#e09030; --success:#4d9065;
   --header-bg:#0e0d0c; --header-fg:#ede9e2;
-  --input-bg:#242220; --select-bg:#242220;
+  --input-bg:#242220;
 }
-
 body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px 16px 40px; transition:background .2s,color .2s; }
-.app { max-width:720px; margin:0 auto; }
+.app { max-width:760px; margin:0 auto; }
 
-/* ── Header ── */
+/* Header */
 .header { background:var(--header-bg); color:var(--header-fg); border-radius:14px; padding:18px 22px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.header-center { text-align:center; flex:1; }
+.header-center { text-align:center; flex:1; min-width:0; }
 .header-month { font-size:21px; font-weight:700; letter-spacing:-.5px; }
 .header-meta { margin-top:5px; font-size:13px; opacity:.8; display:flex; gap:14px; justify-content:center; align-items:center; flex-wrap:wrap; }
 .header-meta strong { opacity:1; font-weight:600; }
 .dv { width:1px; height:12px; background:rgba(255,255,255,.2); display:inline-block; }
-.nav-btn { background:rgba(255,255,255,.1); border:none; color:var(--header-fg); width:36px; height:36px; border-radius:9px; cursor:pointer; font-size:20px; line-height:36px; text-align:center; flex-shrink:0; }
-.nav-btn:hover { background:rgba(255,255,255,.2); }
+.nav-btn,.dark-btn { background:rgba(255,255,255,.1); border:none; color:var(--header-fg); border-radius:9px; cursor:pointer; line-height:1; }
+.nav-btn { width:36px; height:36px; font-size:20px; text-align:center; flex-shrink:0; }
+.dark-btn { width:32px; height:32px; font-size:16px; display:flex; align-items:center; justify-content:center; border-radius:8px; }
+.nav-btn:hover,.dark-btn:hover { background:rgba(255,255,255,.2); }
 .tgt-span { cursor:pointer; border-bottom:1px dashed rgba(255,255,255,.4); }
 .tgt-input { width:46px; padding:1px 4px; border-radius:5px; border:none; text-align:center; font-weight:700; font-size:13px; font-family:inherit; background:rgba(255,255,255,.18); color:var(--header-fg); }
 .view-tabs { display:flex; gap:4px; }
@@ -53,11 +50,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 .view-tab.active { background:rgba(255,255,255,.25); color:var(--header-fg); }
 .view-tab.inactive { background:rgba(255,255,255,.08); color:rgba(255,255,255,.45); }
 .view-tab:hover { background:rgba(255,255,255,.2); color:var(--header-fg); }
-.dark-btn { background:rgba(255,255,255,.1); border:none; color:var(--header-fg); width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px; line-height:32px; text-align:center; flex-shrink:0; }
-.dark-btn:hover { background:rgba(255,255,255,.2); }
 
-/* ── Panels ── */
-.panel { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius,10px); margin-bottom:14px; overflow:hidden; }
+/* Panels */
+.panel { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; margin-bottom:14px; overflow:hidden; }
 .ptoggle { width:100%; background:none; border:none; padding:11px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); border-bottom:1.5px solid transparent; }
 .ptoggle:hover { background:var(--surface2); }
 .ptoggle.open { border-bottom-color:var(--border); }
@@ -66,7 +61,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 .add-row { display:flex; gap:8px; margin-bottom:14px; }
 .add-input { flex:1; padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); font-size:13px; font-family:inherit; outline:none; background:var(--input-bg); color:var(--text); }
 .add-input:focus { border-color:var(--accent); }
-.add-btn { padding:8px 16px; background:var(--ink); color:var(--bg); border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; }
+.add-btn { padding:8px 16px; background:var(--ink); color:var(--bg); border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; white-space:nowrap; }
 .proj-row { display:grid; grid-template-columns:12px 1fr auto auto auto; gap:10px; align-items:center; padding:8px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); margin-bottom:6px; }
 .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; display:inline-block; }
 .budget-input { width:58px; padding:5px 6px; border-radius:7px; border:1.5px solid var(--border); text-align:center; font-size:13px; font-weight:600; font-family:'DM Mono',monospace; outline:none; background:var(--input-bg); color:var(--text); }
@@ -76,112 +71,96 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 .data-btn { padding:8px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ink); display:flex; align-items:center; gap:6px; }
 .data-btn:hover { background:var(--surface3); }
 .data-btn.danger { color:var(--danger); }
-.data-btn.danger:hover { background:var(--surface3); }
 .data-info { margin-top:10px; font-size:12px; color:var(--muted); line-height:1.6; }
-select { background:var(--select-bg); color:var(--text); border:1.5px solid var(--border); padding:8px 10px; border-radius:8px; font-family:inherit; font-size:13px; outline:none; }
-
-/* ── Copy panel ── */
+select { background:var(--input-bg); color:var(--text); border:1.5px solid var(--border); padding:8px 10px; border-radius:8px; font-family:inherit; font-size:13px; outline:none; }
 .copy-section { margin-top:14px; padding-top:14px; border-top:1.5px solid var(--border); }
 .copy-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-.copy-btn { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ink); transition:all .15s; }
+.copy-btn { padding:8px 16px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--ink); }
 .copy-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
 
-/* ── Budget summary ── */
+/* Budget summary */
 .bsum-table { width:100%; border-collapse:collapse; }
 .bsum-table th { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:0 8px 8px; text-align:right; white-space:nowrap; }
 .bsum-table th:first-child { text-align:left; }
-.bsum-table td { padding:7px 8px; border-top:1px solid var(--border); text-align:right; font-size:13px; font-family:'DM Mono',monospace; white-space:nowrap; color:var(--text); }
+.bsum-table td { padding:7px 8px; border-top:1px solid var(--border); text-align:right; font-size:13px; font-family:'DM Mono',monospace; white-space:nowrap; }
 .bsum-table td:first-child { text-align:left; font-family:'DM Sans',sans-serif; font-weight:500; }
 .bsum-table tr.bsum-total td { border-top:1.5px solid var(--border); font-weight:700; background:var(--surface2); }
 .bsum-table tr.bsum-total td:first-child { font-family:'DM Sans',sans-serif; }
 .bsum-note { font-size:11px; color:var(--muted); margin-top:8px; }
 
-/* ── Week cards ── */
+/* Week cards */
 .weeks { display:flex; flex-direction:column; gap:10px; }
-.week-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.07); }
-.week-card.split { background:var(--split-bg); border-color:var(--split-border); }
-.week-card.warning { border-color:#e09030; }
+.week-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.week-card.split { border-color:var(--split-border); }
+.week-card.warning { border-color:var(--warn); }
 .week-head { padding:9px 14px; display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; }
 .week-head:hover { background:var(--surface3); }
-.week-card.split .week-head { background:var(--split-bg); border-bottom-color:var(--split-border); }
+.week-card.split .week-head { border-bottom-color:var(--split-border); }
 .week-card.collapsed .week-head { border-bottom:none; }
 .whl { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; flex-wrap:wrap; }
 .week-num { color:var(--muted); font-weight:500; }
 .week-dates { font-size:12px; color:var(--muted); font-weight:400; }
 .split-badge { background:var(--split-accent); color:#fff; font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; }
-.warn-badge { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; display:inline-flex; align-items:center; gap:3px; background:rgba(224,144,48,.15); color:var(--warn); border:1px solid var(--warn); }
+.warn-badge { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:700; display:inline-flex; align-items:center; gap:3px; background:rgba(224,144,48,.12); color:var(--warn); border:1px solid var(--warn); }
+.abs-badge { font-size:10px; padding:2px 8px; border-radius:20px; color:var(--muted); background:var(--surface3); border:1px solid var(--border); }
 .whr { display:flex; gap:10px; align-items:center; font-size:13px; }
 .chevron { font-size:11px; color:var(--muted); transition:transform .2s; }
 .week-card.collapsed .chevron { transform:rotate(-90deg); }
 .week-body { padding:12px 14px; }
 
-/* Project table */
-.pth { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; padding:0 4px 6px; font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; border-bottom:1.5px solid var(--border); margin-bottom:4px; }
-.pth span:nth-child(2) { text-align:center; }
-.pe { display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; align-items:center; padding:7px 4px; border-bottom:1px solid var(--border); }
-.pen { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:500; }
-.phi { width:68px; padding:7px 6px; border-radius:8px; border-width:1.5px; border-style:solid; text-align:center; font-size:14px; font-weight:700; font-family:'DM Mono',monospace; outline:none; background:var(--input-bg); color:var(--text); }
-.warn-row { background:rgba(224,144,48,.07); border-radius:6px; margin:0 -4px; padding:0 4px; }
-.avail-col { text-align:right; }
-.avail-main { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; line-height:1.2; }
-.avail-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-.wtb { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
-.bm { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; }
-.bt { height:7px; background:var(--surface3); border-radius:4px; overflow:hidden; }
-.bf { height:100%; border-radius:4px; transition:width .3s; }
-.nb { font-size:11px; color:var(--muted); }
+/* Unified day table */
+.day-table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.sdt { border-collapse:separate; border-spacing:0; min-width:max-content; }
+.sdt th { font-size:10px; font-weight:700; color:var(--muted); padding:0 6px 8px; text-align:center; white-space:nowrap; }
+.sdt th.pc { text-align:left; padding-left:2px; text-transform:uppercase; letter-spacing:.05em; min-width:100px; padding-right:10px; }
+.sdt th.dm { color:var(--accent); font-size:11px; }
+.sdt th.do { color:var(--muted); font-size:11px; }
+.sdt th.tc { color:var(--ink); }
+.sdt th.ac { text-align:right; padding-right:4px; font-size:9px; white-space:nowrap; max-width:90px; }
+.sdt td { padding:4px 5px; vertical-align:middle; }
+.sdt td.pnc { font-size:13px; font-weight:500; padding-left:2px; padding-right:10px; white-space:nowrap; }
+.sdt td.sc { padding:0 3px; }
+.sep-line { display:block; width:1px; min-height:32px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
+.sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
+.sdt tr.tr td.pnc { text-align:left; color:var(--muted); font-family:'DM Sans',sans-serif; text-transform:uppercase; letter-spacing:.04em; font-size:10px; }
+.sdt tr.tr td.ac { border-top:1.5px solid var(--border); }
+.dpi { width:52px; padding:6px 3px; border-radius:7px; border-width:1.5px; border-style:solid; text-align:center; font-size:12px; font-weight:600; font-family:'DM Mono',monospace; outline:none; display:block; margin:0 auto; background:var(--input-bg); color:var(--text); }
+.dpi.dim { border-color:var(--border)!important; color:var(--muted)!important; background:var(--surface2)!important; border-style:dashed!important; box-shadow:none!important; }
+.avail-cell { text-align:right; padding-right:4px!important; min-width:88px; }
+.avail-main { font-size:13px; font-weight:700; font-family:'DM Mono',monospace; line-height:1.2; }
+.avail-sub { font-size:10px; color:var(--muted); margin-top:1px; }
 
-/* Absence row */
-.absence-row { margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-.absence-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; flex-shrink:0; }
-.absence-group { display:flex; align-items:center; gap:5px; }
-.absence-group label { font-size:11px; color:var(--muted); white-space:nowrap; }
-.absence-input { width:44px; padding:4px 5px; border-radius:6px; border:1.5px solid var(--border); text-align:center; font-size:12px; font-weight:600; font-family:'DM Mono',monospace; outline:none; background:var(--input-bg); color:var(--text); }
-.absence-input:focus { border-color:var(--muted); }
-.absence-effective { font-size:11px; color:var(--muted); margin-left:4px; }
+/* Week footer */
+.week-footer { margin-top:10px; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.week-bar-wrap { flex:1; min-width:140px; }
+.bm { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:4px; }
+.bt { height:6px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+.bf { height:100%; border-radius:3px; transition:width .3s; }
+.absence-wrap { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.absence-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.abs-grp { display:flex; align-items:center; gap:4px; }
+.abs-grp label { font-size:11px; color:var(--muted); white-space:nowrap; }
+.abs-inp { width:42px; padding:4px 4px; border-radius:6px; border:1.5px solid var(--border); text-align:center; font-size:11px; font-weight:600; font-family:'DM Mono',monospace; outline:none; background:var(--input-bg); color:var(--text); }
+.abs-eff { font-size:11px; color:var(--muted); }
 
 /* Forecast */
-.fc-row { margin-top:10px; padding:9px 12px; background:var(--surface2); border-radius:8px; border:1px solid var(--border); }
-.fc-main { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.fc-row { margin-top:10px; padding:8px 12px; background:var(--surface2); border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
 .fc-lbl { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; }
 .fc-val { font-size:14px; font-weight:700; font-family:'DM Mono',monospace; white-space:nowrap; }
-.fc-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
-.fc-chip { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
-.fc-chip.over { color:var(--danger); border-color:var(--danger); }
-.fc-chip.tight { color:var(--warn); border-color:var(--warn); }
-.import-gcal-btn { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); font-family:inherit; font-size:12px; font-weight:600; color:var(--accent); cursor:pointer; }
+.import-gcal-btn { margin-top:10px; display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface2); font-family:inherit; font-size:12px; font-weight:600; color:var(--accent); cursor:pointer; }
 .import-gcal-btn:hover { background:var(--surface3); }
 .import-gcal-btn:disabled { opacity:.5; cursor:not-allowed; }
-
-/* Split per-day */
-.split-sec { margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--split-border); }
-.split-sec-title { font-size:11px; font-weight:700; color:var(--split-accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em; }
-.split-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-.sdt { border-collapse:separate; border-spacing:0; width:100%; min-width:max-content; }
-.sdt th { font-size:10px; font-weight:700; color:var(--muted); padding:0 5px 8px; text-align:center; white-space:nowrap; }
-.sdt th.pc { text-align:left; padding-left:2px; text-transform:uppercase; letter-spacing:.05em; min-width:90px; }
-.sdt th.dm { color:var(--accent); }
-.sdt th.do { color:var(--muted); }
-.sdt th.tc { color:var(--ink); }
-.sdt td { padding:4px; vertical-align:middle; }
-.sdt td.pnc { font-size:12px; font-weight:500; padding-left:2px; color:var(--text); }
-.sdt td.sc { padding:0 4px; }
-.sdt .sep-line { display:block; width:1px; min-height:24px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
-.sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
-.sdt tr.tr td.pnc { text-align:left; color:var(--muted); font-family:'DM Sans',sans-serif; text-transform:uppercase; letter-spacing:.04em; }
-.dpi { width:50px; padding:5px 3px; border-radius:7px; border-width:1.5px; border-style:solid; text-align:center; font-size:12px; font-weight:700; font-family:'DM Mono',monospace; outline:none; display:block; margin:0 auto; background:var(--input-bg); color:var(--text); }
-.dpi.dim { border-color:var(--border)!important; color:var(--muted)!important; background:var(--surface2)!important; border-style:dashed!important; box-shadow:none!important; }
 
 /* Year */
 .chart-toggle-btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface); font-family:inherit; font-size:13px; font-weight:600; color:var(--ink); cursor:pointer; }
 .chart-toggle-btn:hover { background:var(--surface2); }
 .chart-toggle-btn.active { background:var(--ink); color:var(--bg); border-color:var(--ink); }
-.year-table-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:14px; }
+.year-table-wrap { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow-x:auto; box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:14px; }
 .year-table { width:max-content; min-width:100%; border-collapse:collapse; font-size:13px; }
 .year-table th { padding:9px 14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:var(--surface2); border-bottom:1.5px solid var(--border); text-align:right; white-space:nowrap; }
 .year-table th:first-child { text-align:left; }
 .year-table th .dot-sm { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px; vertical-align:middle; }
-.year-table td { padding:9px 14px; border-bottom:1px solid var(--border); text-align:right; font-family:'DM Mono',monospace; white-space:nowrap; color:var(--text); }
+.year-table td { padding:9px 14px; border-bottom:1px solid var(--border); text-align:right; font-family:'DM Mono',monospace; white-space:nowrap; }
 .year-table td:first-child { text-align:left; font-family:'DM Sans',sans-serif; font-weight:600; }
 .year-table tr:last-child td { border-bottom:none; }
 .year-table tr.total-row td { border-top:1.5px solid var(--border); font-weight:700; background:var(--surface2); }
@@ -189,9 +168,8 @@ select { background:var(--select-bg); color:var(--text); border:1.5px solid var(
 .year-table td.cur-month { background:rgba(29,78,216,.08); }
 .year-table td.over-bud { color:var(--danger); }
 .year-table td.zero { color:var(--muted); }
-.chart-section { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:14px; }
+.chart-section { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:14px; }
 .chart-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px; }
-.chart-title { font-size:13px; font-weight:700; }
 .proj-filter { display:flex; flex-wrap:wrap; gap:5px; }
 .filter-chip { padding:3px 10px; border-radius:20px; border:1.5px solid var(--border); background:var(--surface2); font-size:11px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; color:var(--muted); }
 .filter-chip.on { color:var(--ink); }
@@ -201,25 +179,10 @@ select { background:var(--select-bg); color:var(--text); border:1.5px solid var(
 .sc2 { display:flex; flex-wrap:wrap; gap:7px; }
 .sc2-chip { display:flex; align-items:center; gap:5px; background:var(--surface); border-radius:20px; padding:4px 11px; font-size:12px; font-weight:500; border:1.5px solid transparent; }
 
-/* Daily verification row */
-.day-verify-row { margin-top:10px; padding:10px 12px; background:var(--surface2); border-radius:8px; border:1px solid var(--border); }
-.day-verify-title { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
-.day-verify-grid { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:7px; }
-.dvc { text-align:center; }
-.dvc label { display:block; font-size:10px; color:var(--muted); margin-bottom:1px; }
-.dvc .dv-date { font-size:10px; color:var(--muted); margin-bottom:3px; }
-.dv-input { width:46px; padding:5px 3px; border-radius:7px; border:1.5px solid var(--border); text-align:center; font-size:12px; font-weight:600; font-family:'DM Mono',monospace; outline:none; background:var(--input-bg); color:var(--text); display:block; }
-.dv-input.wknd { opacity:.55; }
-.dv-status { font-size:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.dv-ok { color:var(--success); font-weight:600; }
-.dv-diff { color:var(--warn); font-weight:600; }
-
-/* Toast */
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:10px 20px; border-radius:30px; font-size:13px; font-weight:500; opacity:0; transition:opacity .3s; pointer-events:none; z-index:999; white-space:nowrap; }
 .toast.show { opacity:1; }
-.empty-msg { text-align:center; color:var(--muted); font-size:13px; padding:8px; }
+.empty-msg { text-align:center; color:var(--muted); font-size:13px; padding:12px 8px; }
 .footer { margin-top:12px; font-size:11px; color:var(--muted); text-align:center; }
-code { font-family:'DM Mono',monospace; background:var(--surface2); padding:1px 5px; border-radius:3px; font-size:11px; color:var(--text); }
 </style>
 </head>
 <body>
@@ -228,9 +191,9 @@ code { font-family:'DM Mono',monospace; background:var(--surface2); padding:1px 
 <script>
 const MONTHS=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
 const MONTHS_SHORT=['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
-const DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
+const DAYS_WK=['Ma','Di','Wo','Do','Vr']; // Mon–Fri only
 const COLORS=['#2d5a3d','#1d4ed8','#b07c00','#7c3aed','#be3a2b','#0891b2','#be185d','#4d7c0f'];
-const LS_KEY='urenregistratie_v4';
+const LS_KEY='urenregistratie_v5';
 const GCAL_CLIENT_ID='496489196623-41l4utlleu7qs1039seg40uhjc6b99p0.apps.googleusercontent.com';
 
 // ════════ STATE ════════
@@ -238,38 +201,63 @@ const _n=new Date();
 let S={
   yr:_n.getFullYear(), mo:_n.getMonth(), target:40,
   projects:[{id:'p1',name:'Project 1',color:COLORS[0]}],
-  budgets:{}, projWeek:{}, projDay:{},
-  absences:{},        // "weekKey|holiday|vacation|sick" -> hours
+  budgets:{},
+  projDay:{},    // "YYYY-MM-DD|projId" -> hours  (single source of truth)
+  absences:{},   // "weekKey|holiday|vacation|sick" -> hours
   gcalConnected:false, gcalToken:null, gcalMappings:[],
-  dayTotals:{},       // "YYYY-MM-DD" -> hours (daily total, all projects combined)
   darkMode:false,
   view:'month', chartYr:_n.getFullYear(), showChart:false, chartFilter:{},
   collapsedWks:{}, showBudgetSummary:true,
-  showPanel:false, showData:false, showGcal:false, showCopy:false,
+  showPanel:false, showData:false, showGcal:false,
   editTarget:false, newName:''
 };
 
 // ════════ STORAGE ════════
 function loadState(){
   try{
-    const raw=localStorage.getItem(LS_KEY); if(!raw)return;
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw){
+      // Try migrating from v4
+      const v4=localStorage.getItem('urenregistratie_v4');
+      if(v4){
+        const d=JSON.parse(v4);
+        ['target','projects','budgets','projDay','absences','gcalMappings','gcalConnected','darkMode'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+        // Migrate projWeek -> projDay (distribute evenly Mon-Fri)
+        if(d.projWeek) migrateFromProjWeek(d.projWeek);
+      }
+      return;
+    }
     const d=JSON.parse(raw);
-    ['target','projects','budgets','projWeek','projDay','absences','dayTotals',
-     'gcalMappings','gcalConnected','darkMode'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+    ['target','projects','budgets','projDay','absences','gcalMappings','gcalConnected','darkMode'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+    // Migrate projWeek if present in saved data
+    if(d.projWeek&&Object.keys(d.projWeek).length) migrateFromProjWeek(d.projWeek);
   }catch(e){console.warn(e);}
+}
+function migrateFromProjWeek(projWeek){
+  for(const [key,hrs] of Object.entries(projWeek)){
+    const [weekKey,...rest]=key.split('|');const pid=rest.join('|');
+    const n=parseFloat(hrs)||0;if(n<=0)continue;
+    const mon=new Date(weekKey);if(isNaN(mon.getTime()))continue;
+    const wkdays=Array.from({length:5},(_,i)=>{const d=new Date(mon);d.setDate(d.getDate()+i);return d;});
+    const hasData=wkdays.some(d=>S.projDay[`${fmt(d)}|${pid}`]!==undefined);
+    if(!hasData){
+      const pd=floorQ(n/5);const rem=Math.round((n-pd*5)*4)/4;
+      wkdays.forEach((d,i)=>{const v=i===0?pd+rem:pd;if(v>0)S.projDay[`${fmt(d)}|${pid}`]=v;});
+    }
+  }
 }
 function saveState(){
   try{
-    const {target,projects,budgets,projWeek,projDay,absences,dayTotals,gcalMappings,gcalConnected,darkMode}=S;
-    localStorage.setItem(LS_KEY,JSON.stringify({target,projects,budgets,projWeek,projDay,absences,dayTotals,gcalMappings,gcalConnected,darkMode}));
+    const {target,projects,budgets,projDay,absences,gcalMappings,gcalConnected,darkMode}=S;
+    localStorage.setItem(LS_KEY,JSON.stringify({target,projects,budgets,projDay,absences,gcalMappings,gcalConnected,darkMode}));
   }catch(e){}
 }
 
 // ════════ EXPORT/IMPORT ════════
 function exportJSON(){
   const d=new Date();
-  const {target,projects,budgets,projWeek,projDay,absences,dayTotals}=S;
-  const blob=new Blob([JSON.stringify({exportDatum:d.toISOString(),versie:4,target,projects,budgets,projWeek,projDay,absences,dayTotals},null,2)],{type:'application/json'});
+  const {target,projects,budgets,projDay,absences}=S;
+  const blob=new Blob([JSON.stringify({exportDatum:d.toISOString(),versie:5,target,projects,budgets,projDay,absences},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=`uren-export-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
   a.click();URL.revokeObjectURL(a.href);toast('Exportbestand gedownload ✓');
@@ -282,7 +270,8 @@ function importJSON(){
     r.onload=ev=>{
       try{
         const d=JSON.parse(ev.target.result);if(!d.projects)throw 0;
-        ['target','projects','budgets','projWeek','projDay','absences','dayTotals'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+        ['target','projects','budgets','projDay','absences'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+        if(d.projWeek)migrateFromProjWeek(d.projWeek);
         saveState();render();toast('Data geïmporteerd ✓');
       }catch{alert('Kon het bestand niet importeren.');}
     };r.readAsText(f);
@@ -291,8 +280,7 @@ function importJSON(){
 function clearAllData(){
   if(!confirm('Weet je zeker dat je alle data wilt wissen?'))return;
   S.target=40;S.projects=[{id:'p1',name:'Project 1',color:COLORS[0]}];
-  S.budgets={};S.projWeek={};S.projDay={};S.absences={};S.dayTotals={};
-  saveState();render();toast('Alle data gewist');
+  S.budgets={};S.projDay={};S.absences={};saveState();render();toast('Alle data gewist');
 }
 
 // ════════ DATE HELPERS ════════
@@ -311,32 +299,28 @@ function weeksOfMonth(yr,mo){
   }
   return weeks;
 }
+// Mon–Fri days of a week
+function wkDays(w){return w.days.slice(0,5);}
+// Mon–Fri days that belong to current month view
+function wkDaysInMonth(w){return w.split?w.inM.filter(d=>(d.getDay()+6)%7<5):wkDays(w);}
 
 // ════════ CALCULATIONS ════════
-function getProjWkHrs(w,pid){
-  if(w.split)return w.days.reduce((s,d)=>s+(parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0),0);
-  return parseFloat(S.projWeek[`${w.key}|${pid}`])||0;
-}
 function getProjDayHrs(d,pid){return parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0;}
+function getProjWkHrs(w,pid){return wkDays(w).reduce((s,d)=>s+getProjDayHrs(d,pid),0);}
 function getTotalWkHrs(w){return S.projects.reduce((s,p)=>s+getProjWkHrs(w,p.id),0);}
-function getMonthWkHrs(w){
-  if(w.split)return S.projects.reduce((s,p)=>s+w.inM.reduce((s2,d)=>s2+getProjDayHrs(d,p.id),0),0);
-  return getTotalWkHrs(w);
-}
+function getMonthWkHrs(w){return S.projects.reduce((s,p)=>s+wkDaysInMonth(w).reduce((s2,d)=>s2+getProjDayHrs(d,p.id),0),0);}
 function getMonthTotal(weeks){return weeks.reduce((s,w)=>s+getMonthWkHrs(w),0);}
 function getProjBudget(pid,yr,mo){return parseFloat(S.budgets[mkey(yr??S.yr,mo??S.mo)]?.[pid])||0;}
 function getProjMonthUsedUpTo(pid,upToIdx,weeks){
   let t=0;
   for(let i=0;i<=upToIdx;i++){
-    const w=weeks[i];
-    if(w.split)t+=w.inM.reduce((s,d)=>s+getProjDayHrs(d,pid),0);
-    else t+=parseFloat(S.projWeek[`${w.key}|${pid}`])||0;
+    t+=wkDaysInMonth(weeks[i]).reduce((s,d)=>s+getProjDayHrs(d,pid),0);
   }
   return t;
 }
-function getAbsenceHrs(weekKey,type){return parseFloat(S.absences[`${weekKey}|${type}`])||0;}
-function getTotalAbsenceHrs(weekKey){return['holiday','vacation','sick'].reduce((s,t)=>s+getAbsenceHrs(weekKey,t),0);}
-function getEffectiveTarget(weekKey){return Math.max(0,S.target-getTotalAbsenceHrs(weekKey));}
+function getAbsHrs(wk,type){return parseFloat(S.absences[`${wk}|${type}`])||0;}
+function getTotalAbsHrs(wk){return['holiday','vacation','sick'].reduce((s,t)=>s+getAbsHrs(wk,t),0);}
+function getEffTarget(wk){return Math.max(0,S.target-getTotalAbsHrs(wk));}
 function getOverrunPids(wIdx,weeks){
   const at=new Set();
   S.projects.forEach(p=>{
@@ -359,10 +343,8 @@ function prevChartYr(){S.chartYr--;render();}
 function nextChartYr(){S.chartYr++;render();}
 function setView(v){S.view=v;render();}
 function setTarget(v){S.target=parseFloat(v)||0;saveState();}
-function setProjHrs(wk,pid,v){S.projWeek[`${wk}|${pid}`]=v;saveState();render();}
 function setProjDayHrs(dk,pid,v){S.projDay[`${dk}|${pid}`]=v;saveState();render();}
 function setAbsence(wk,type,v){S.absences[`${wk}|${type}`]=v;saveState();render();}
-function setDayTotal(dk,v){S.dayTotals[dk]=v;saveState();render();}
 function setBudget(pid,mk,v){if(!S.budgets[mk])S.budgets[mk]={};S.budgets[mk][pid]=v;saveState();}
 function toggleWk(key){S.collapsedWks[key]=!S.collapsedWks[key];render();}
 function toggleChart(){S.showChart=!S.showChart;render();}
@@ -379,15 +361,14 @@ function removeProject(id){
   S.projects=S.projects.filter(p=>p.id!==id);saveState();render();
 }
 function copyBudgets(mode){
-  const tMo=S.mo===11?0:S.mo+1, tYr=S.mo===11?S.yr+1:S.yr;
-  const tMkey=mkey(tYr,tMo), sMkey=mkey(S.yr,S.mo);
-  const srcBud=S.budgets[sMkey]||{};
-  const projs=mode==='all'?S.projects:S.projects.filter(p=>(parseFloat(srcBud[p.id])||0)>0);
+  const tMo=S.mo===11?0:S.mo+1,tYr=S.mo===11?S.yr+1:S.yr;
+  const tMk=mkey(tYr,tMo),sMk=mkey(S.yr,S.mo);
+  const src=S.budgets[sMk]||{};
+  const projs=mode==='all'?S.projects:S.projects.filter(p=>(parseFloat(src[p.id])||0)>0);
   if(!projs.length){toast('Geen projecten om te kopiëren');return;}
-  if(!S.budgets[tMkey])S.budgets[tMkey]={};
-  projs.forEach(p=>{S.budgets[tMkey][p.id]=srcBud[p.id]||0;});
-  saveState();render();
-  toast(`${projs.length} project${projs.length!==1?'en':''} gekopieerd naar ${MONTHS[tMo]} ${tYr} ✓`);
+  if(!S.budgets[tMk])S.budgets[tMk]={};
+  projs.forEach(p=>{S.budgets[tMk][p.id]=src[p.id]||0;});
+  saveState();render();toast(`${projs.length} project${projs.length!==1?'en':''} gekopieerd naar ${MONTHS[tMo]} ${tYr} ✓`);
 }
 
 // ════════ GOOGLE CALENDAR ════════
@@ -395,14 +376,14 @@ let gcalTokenClient=null;
 window.onGsiLoad=function(){
   if(!window.google)return;
   try{gcalTokenClient=google.accounts.oauth2.initTokenClient({client_id:GCAL_CLIENT_ID,scope:'https://www.googleapis.com/auth/calendar.readonly',callback:handleGcalToken});}
-  catch(e){console.warn('GSI init:',e);}
+  catch(e){console.warn('GSI:',e);}
 };
 function handleGcalToken(resp){
-  if(resp.error){toast('Verbinding mislukt: '+resp.error);return;}
+  if(resp.error){toast('Verbinding mislukt');return;}
   S.gcalToken=resp.access_token;S.gcalConnected=true;saveState();render();toast('Google Agenda verbonden ✓');
 }
 function connectGcal(){
-  if(!window.google){toast('Google bibliotheek laadt nog, probeer opnieuw');return;}
+  if(!window.google){toast('Google bibliotheek laadt nog');return;}
   if(!gcalTokenClient)window.onGsiLoad();
   gcalTokenClient?.requestAccessToken();
 }
@@ -418,12 +399,12 @@ function addMapping(){
 }
 function removeMapping(id){S.gcalMappings=S.gcalMappings.filter(m=>m.id!==id);saveState();render();}
 function getEventDurHrs(ev){
-  if(ev.start?.date)return 0;if(!ev.start?.dateTime)return 0;
+  if(ev.start?.date||!ev.start?.dateTime)return 0;
   return(new Date(ev.end.dateTime)-new Date(ev.start.dateTime))/3600000;
 }
 async function importWeekFromGcal(weekKey){
   if(!S.gcalToken){toast('Verbind eerst met Google Agenda');return;}
-  if(!S.gcalMappings.length){toast('Voeg eerst koppelingsregels toe');return;}
+  if(!S.gcalMappings.length){toast('Voeg koppelingsregels toe');return;}
   const weeks=weeksOfMonth(S.yr,S.mo);const w=weeks.find(x=>x.key===weekKey);if(!w)return;
   const btn=document.querySelector(`[data-import="${weekKey}"]`);
   if(btn){btn.textContent='⏳ Laden…';btn.disabled=true;}
@@ -434,19 +415,19 @@ async function importWeekFromGcal(weekKey){
     const resp=await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${tMin}&timeMax=${tMax}&singleEvents=true&orderBy=startTime&maxResults=250`,{headers:{Authorization:`Bearer ${S.gcalToken}`}});
     if(resp.status===401){S.gcalConnected=false;S.gcalToken=null;saveState();render();toast('Sessie verlopen, verbind opnieuw');return;}
     events=(await resp.json()).items||[];
-  }catch(e){toast('Fout bij ophalen agenda');render();return;}
-  let matched=0;const dayHrs={},wkHrs={};
+  }catch{toast('Fout bij ophalen agenda');render();return;}
+  let matched=0;
   for(const ev of events){
     const title=(ev.summary||'').toLowerCase();
     const rule=S.gcalMappings.find(m=>title.includes(m.keyword.toLowerCase()));
     if(!rule)continue;const dur=floorQ(getEventDurHrs(ev));if(dur<=0)continue;
-    matched++;
-    if(w.split){const day=ev.start.dateTime?fmt(new Date(ev.start.dateTime)):ev.start.date;const k=`${day}|${rule.projId}`;dayHrs[k]=(dayHrs[k]||0)+dur;}
-    else wkHrs[rule.projId]=(wkHrs[rule.projId]||0)+dur;
+    if(!ev.start?.dateTime)continue;
+    const d=new Date(ev.start.dateTime);
+    const dayIdx=(d.getDay()+6)%7;if(dayIdx>=5)continue; // skip weekends
+    const dk=fmt(d);const k=`${dk}|${rule.projId}`;
+    S.projDay[k]=(parseFloat(S.projDay[k])||0)+dur;matched++;
   }
   if(!matched){toast('Geen overeenkomsten gevonden');render();return;}
-  if(w.split)Object.assign(S.projDay,dayHrs);
-  else Object.entries(wkHrs).forEach(([pid,hrs])=>{S.projWeek[`${weekKey}|${pid}`]=hrs;});
   saveState();render();toast(`${matched} event${matched!==1?'s':''} geïmporteerd ✓`);
 }
 
@@ -480,8 +461,8 @@ function render(){
 
 // ════════ HEADER ════════
 function rHeader(tot,isMonth){
-  const navL=isMonth?`<button class="nav-btn" onclick="prevMo()">‹</button>`:`<button class="nav-btn" onclick="prevChartYr()">‹</button>`;
-  const navR=isMonth?`<button class="nav-btn" onclick="nextMo()">›</button>`:`<button class="nav-btn" onclick="nextChartYr()">›</button>`;
+  const nL=isMonth?`<button class="nav-btn" onclick="prevMo()">‹</button>`:`<button class="nav-btn" onclick="prevChartYr()">‹</button>`;
+  const nR=isMonth?`<button class="nav-btn" onclick="nextMo()">›</button>`:`<button class="nav-btn" onclick="nextChartYr()">›</button>`;
   const title=isMonth?`${MONTHS[S.mo]} ${S.yr}`:S.chartYr;
   const meta=isMonth
     ?`<span>Totaal: <strong>${fmtH(tot)} u</strong></span><span class="dv"></span>
@@ -490,7 +471,7 @@ function rHeader(tot,isMonth){
         :`<strong class="tgt-span" onclick="S.editTarget=true;render()">${S.target} u</strong>`}</span>`
     :`<span>Jaaroverzicht</span>`;
   return`<div class="header">
-    ${navL}
+    ${nL}
     <div class="header-center">
       <div class="header-month">${title}</div>
       <div class="header-meta">
@@ -503,7 +484,7 @@ function rHeader(tot,isMonth){
         <button class="dark-btn" onclick="toggleDark()" title="${S.darkMode?'Licht':'Donker'}">${S.darkMode?'☀️':'🌙'}</button>
       </div>
     </div>
-    ${navR}
+    ${nR}
   </div>`;
 }
 
@@ -515,14 +496,11 @@ function rBudgetSummary(weeks){
   const totalUsed=getMonthTotal(weeks);
   const totalBud=sp.reduce((s,p)=>s+getProjBudget(p.id),0);
   const totalRem=totalBud-totalUsed;
-  // Effective monthly capacity accounts for absences already logged
-  const totalAbsenceThisMonth=weeks.reduce((s,w)=>s+getTotalAbsenceHrs(w.key),0);
-
+  const totalAbsThisMo=weeks.reduce((s,w)=>s+getTotalAbsHrs(w.key),0);
   let body='';
   if(S.showBudgetSummary){
     const rows=sp.map(p=>{
-      const bud=getProjBudget(p.id);
-      const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);
+      const bud=getProjBudget(p.id);const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);
       const rem=bud-used;const ppw=remWks>0?floorQ(rem/remWks):null;
       const rc=rem<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
       return`<tr>
@@ -533,7 +511,6 @@ function rBudgetSummary(weeks){
         <td style="font-weight:700;color:${rc}">${ppw!==null?fmtH(ppw)+' u/wk':'–'}</td>
       </tr>`;
     }).join('');
-    const absNote=totalAbsenceThisMonth>0?` · ${fmtH(totalAbsenceThisMonth)} u afwezigheid verrekend`:'';
     body=`<div class="pbody" style="padding-bottom:12px">
       <table class="bsum-table">
         <thead><tr><th>Project</th><th>Budget</th><th>Gebruikt</th><th>Resterend</th><th>Per week*</th></tr></thead>
@@ -543,11 +520,11 @@ function rBudgetSummary(weeks){
             <td style="color:var(--muted)">${fmtH(totalBud)} u</td>
             <td>${fmtH(totalUsed)} u</td>
             <td style="color:${totalRem<0?'var(--danger)':'var(--text)'}">${fmtH(totalRem)} u</td>
-            <td style="font-weight:700;color:${totalRem<0?'var(--danger)':'var(--success)'}">${remWks>0?fmtH(floorQ(totalRem/remWks))+' u/wk':'–'}</td>
+            <td style="color:${totalRem<0?'var(--danger)':'var(--success)'};font-weight:700">${remWks>0?fmtH(floorQ(totalRem/remWks))+' u/wk':'–'}</td>
           </tr>
         </tbody>
       </table>
-      <div class="bsum-note">* Afgerond naar beneden op kwartier · ${remWks} resterende week${remWks!==1?'en':''}${absNote}</div>
+      <div class="bsum-note">* Afgerond naar beneden op kwartier · ${remWks} resterende week${remWks!==1?'en':''}${totalAbsThisMo>0?` · ${fmtH(totalAbsThisMo)} u afwezigheid verrekend`:''}</div>
     </div>`;
   }
   return`<div class="panel" style="border-color:var(--accent)">
@@ -555,51 +532,51 @@ function rBudgetSummary(weeks){
       <div class="ptl">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         <span style="color:var(--success);font-weight:700">Budgetoverzicht — ${MONTHS[S.mo]}</span>
-        <span style="font-size:11px;color:var(--muted);font-weight:400">${fmtH(totalUsed)} / ${fmtH(totalBud)} u gebruikt</span>
+        <span style="font-size:11px;color:var(--muted);font-weight:400">${fmtH(totalUsed)} / ${fmtH(totalBud)} u</span>
       </div><span>${S.showBudgetSummary?'▲':'▼'}</span>
     </button>${body}
   </div>`;
 }
 
 // ════════ GCAL PANEL ════════
-function rGcalPanel(cm,weeks){
+function rGcalPanel(cm){
   let body='';
   if(S.showGcal){
-    const projOpts=sortedProjects().map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
-    const connStatus=S.gcalConnected
+    const opts=sortedProjects().map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+    const connSt=S.gcalConnected
       ?`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--accent-light);border:1.5px solid var(--accent);border-radius:9px;margin-bottom:14px">
-          <span style="font-size:13px;font-weight:600;color:var(--success)">● Verbonden met Google Agenda</span>
+          <span style="font-size:13px;font-weight:600;color:var(--success)">● Verbonden</span>
           <button class="data-btn danger" onclick="disconnectGcal()" style="padding:5px 12px;font-size:12px">Ontkoppelen</button>
         </div>`
       :`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;margin-bottom:14px">
           <span style="font-size:13px;color:var(--muted)">○ Niet verbonden</span>
           <button class="add-btn" onclick="connectGcal()">Verbinden met Google Agenda</button>
         </div>`;
-    const mappingRows=S.gcalMappings.map(m=>{
+    const mRows=S.gcalMappings.map(m=>{
       const p=S.projects.find(x=>x.id===m.projId);
       return`<div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
         <span style="font-size:13px">Events met <strong>"${esc(m.keyword)}"</strong></span>
-        <span style="font-size:13px;display:flex;align-items:center;gap:6px">→ ${p?`<div class="dot" style="background:${p.color}"></div>${esc(p.name)}`:'Onbekend'}</span>
+        <span style="font-size:13px;display:flex;align-items:center;gap:6px">→ ${p?`<div class="dot" style="background:${p.color}"></div>${esc(p.name)}`:'?'}</span>
         <button class="del-btn" onclick="removeMapping('${m.id}')">✕</button>
       </div>`;
     }).join('');
     body=`<div class="pbody">
-      ${connStatus}
+      ${connSt}
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Koppelingsregels</div>
-      ${!S.gcalMappings.length?`<div class="empty-msg" style="text-align:left;padding:4px 0">Nog geen regels.</div>`:mappingRows}
+      ${!S.gcalMappings.length?`<div style="font-size:13px;color:var(--muted);padding:4px 0 8px">Nog geen regels.</div>`:mRows}
       <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;margin-top:10px">
         <input class="add-input" id="new-kw" type="text" placeholder="Zoekterm (bijv. standup)">
-        <select id="new-kw-proj"><option value="">Kies project…</option>${projOpts}</select>
+        <select id="new-kw-proj"><option value="">Kies project…</option>${opts}</select>
         <button class="add-btn" onclick="addMapping()">+</button>
       </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.6">Match op eventnaam (niet hoofdlettergevoelig) · Duur afgerond op kwartieren · Hele-dag events overgeslagen</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.6">Match op eventnaam · Duur afgerond op kwartieren · Hele-dag events &amp; weekendevents overgeslagen</div>
     </div>`;
   }
   return`<div class="panel">
     <button class="ptoggle ${S.showGcal?'open':''}" onclick="S.showGcal=!S.showGcal;render()">
       <div class="ptl">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Google Agenda${S.gcalConnected?' <span style="color:var(--success);font-weight:600;font-size:11px">● Verbonden</span>':''}
+        Google Agenda${S.gcalConnected?' <span style="color:var(--success);font-size:11px">● Verbonden</span>':''}
       </div><span>${S.showGcal?'▲':'▼'}</span>
     </button>${body}
   </div>`;
@@ -625,25 +602,21 @@ function rProjPanel(cm,weeks){
         <button class="del-btn" onclick="removeProject('${p.id}')">✕</button>
       </div>`;
     }).join('');
-
-    // Copy section
-    const srcBud=S.budgets[cm]||{};
-    const activeCount=S.projects.filter(p=>(parseFloat(srcBud[p.id])||0)>0).length;
-    const copySection=`<div class="copy-section">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Kopieer budgetten naar ${nextMonthName()}</div>
-      <div class="copy-btns">
-        <button class="copy-btn" onclick="copyBudgets('all')">Alle ${S.projects.length} projecten</button>
-        <button class="copy-btn" onclick="copyBudgets('active')">Alleen met budget deze maand (${activeCount})</button>
-      </div>
-    </div>`;
-
+    const src=S.budgets[cm]||{};
+    const actCnt=S.projects.filter(p=>(parseFloat(src[p.id])||0)>0).length;
     body=`<div class="pbody">
       <div class="add-row">
         <input class="add-input" id="npi" type="text" placeholder="Naam nieuw project…" oninput="S.newName=this.value" onkeydown="if(event.key==='Enter')addProject()">
         <button class="add-btn" onclick="addProject()">+ Toevoegen</button>
       </div>
       ${!S.projects.length?`<div class="empty-msg">Nog geen projecten.</div>`:rows}
-      ${S.projects.length?copySection:''}
+      ${S.projects.length?`<div class="copy-section">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Kopieer naar ${nextMonthName()}</div>
+        <div class="copy-btns">
+          <button class="copy-btn" onclick="copyBudgets('all')">Alle ${S.projects.length} projecten</button>
+          <button class="copy-btn" onclick="copyBudgets('active')">Alleen met budget (${actCnt})</button>
+        </div>
+      </div>`:''}
     </div>`;
   }
   return`<div class="panel">
@@ -667,7 +640,7 @@ function rDataPanel(){
         <button class="data-btn" onclick="importJSON()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Importeer JSON</button>
         <button class="data-btn danger" onclick="clearAllData()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>Alles wissen</button>
       </div>
-      <div class="data-info">Opgeslagen in browser · ${kb} KB &nbsp;·&nbsp; <strong>Export:</strong> JSON-backup &nbsp;·&nbsp; <strong>Import:</strong> herstel <em>(overschrijft data)</em></div>
+      <div class="data-info">Opgeslagen in browser · ${kb} KB · <strong>Export:</strong> JSON-backup · <strong>Import:</strong> herstel <em>(overschrijft data)</em></div>
     </div>`;
   }
   return`<div class="panel">
@@ -682,8 +655,8 @@ function rDataPanel(){
 function rWeek(w,weeks,wIdx){
   const collapsed=!!S.collapsedWks[w.key];
   const totalHrs=getTotalWkHrs(w);
-  const absHrs=getTotalAbsenceHrs(w.key);
-  const effTarget=getEffectiveTarget(w.key);
+  const absHrs=getTotalAbsHrs(w.key);
+  const effTarget=getEffTarget(w.key);
   const rem=effTarget-totalHrs;
   const pct=Math.min(100,effTarget>0?(totalHrs/effTarget)*100:0);
   const rc=rem<0?'var(--danger)':rem===0?'var(--success)':'var(--ink)';
@@ -699,11 +672,11 @@ function rWeek(w,weeks,wIdx){
       <span class="week-num">Week ${w.wk}</span>
       <span class="week-dates">${dr}</span>
       ${w.split?`<span class="split-badge">✂ Gesplitst</span>`:''}
-      ${absHrs>0?`<span style="font-size:10px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">${fmtH(absHrs)} u afwezigheid</span>`:''}
+      ${absHrs>0?`<span class="abs-badge">${fmtH(absHrs)} u afwezigheid</span>`:''}
       ${hasOverrun?`<span class="warn-badge">⚠ dreigt over budget</span>`:''}
     </div>
     <div class="whr">
-      <span style="color:var(--muted);font-size:13px">Totaal: <strong style="color:var(--ink)">${fmtH(totalHrs)} u</strong></span>
+      <span style="color:var(--muted);font-size:13px"><strong style="color:var(--ink)">${fmtH(totalHrs)}</strong> / ${fmtH(effTarget)} u</span>
       <span style="font-weight:700;color:${rc}">${rs}</span>
       <span class="chevron">▼</span>
     </div>
@@ -711,143 +684,149 @@ function rWeek(w,weeks,wIdx){
 
   if(collapsed)return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''} collapsed">${head}</div>`;
 
-  // Project rows
-  let pc='';
+  // ── Build the unified Mon-Fri per-project table ──
+  const weekdays=wkDays(w); // exactly Mon–Fri
+
+  // Find separator index for split weeks (where month changes between consecutive days)
+  let sepIdx=-1;
+  if(w.split){
+    for(let i=0;i<weekdays.length-1;i++){
+      if(weekdays[i].getMonth()!==weekdays[i+1].getMonth()){sepIdx=i;break;}
+    }
+  }
+
+  // Column headers
+  const colHeads=weekdays.map((d,i)=>{
+    const isActive=!w.split||w.inM.some(x=>fmt(x)===fmt(d));
+    const cls=isActive?'dm':'do';
+    const afterSep=sepIdx===i?`<th class="sc" style="width:10px"></th>`:'';
+    return`<th class="${cls}" style="min-width:58px">${DAYS_WK[i]}<br><span style="font-weight:400;opacity:.7;font-size:9px">${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}</span></th>${afterSep}`;
+  }).join('');
+
+  let tableContent='';
   if(!visProjects.length){
-    pc=`<div class="empty-msg">${!S.projects.length?'Voeg projecten toe via het paneel hierboven.':'Stel een maandbudget in om uren in te vullen.'}</div>`;
+    tableContent=`<div class="empty-msg">${!S.projects.length?'Voeg projecten toe via het paneel hierboven.':'Stel een maandbudget in om uren in te vullen.'}</div>`;
   } else {
-    const thead=`<div class="pth"><span>Project</span><span>Uren week</span><span>Beschikbaar / week</span></div>`;
-    const rows=visProjects.map(p=>{
-      const wkH=getProjWkHrs(w,p.id);const used=getProjMonthUsedUpTo(p.id,wIdx,weeks);
+    // Project rows
+    const projRows=visProjects.map(p=>{
+      const wkH=getProjWkHrs(w,p.id);
+      const used=getProjMonthUsedUpTo(p.id,wIdx,weeks);
       const bud=getProjBudget(p.id);const rb=bud-used;
       const ppw=bud>0&&remWks>0?floorQ(rb/remWks):null;
       const isOver=overrunPids.has(p.id);
-      const c3=rb<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
-      const inp=w.split
-        ?`<span style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'} u</span>`
-        :`<input class="phi" style="border-color:${ha(p.color,.25)};color:${p.color};background:var(--input-bg)"
-            type="number" min="0" step="0.25" value="${S.projWeek[`${w.key}|${p.id}`]??''}" placeholder="0"
-            onchange="setProjHrs('${w.key}','${p.id}',this.value)"
-            onfocus="this.style.boxShadow='0 0 0 3px ${ha(p.color,.2)}'" onblur="this.style.boxShadow='none'">`;
-      return`<div class="pe ${isOver?'warn-row':''}">
-        <div class="pen"><div class="dot" style="background:${p.color}"></div><span>${esc(p.name)}</span></div>
-        <div style="text-align:center">${inp}</div>
-        <div class="avail-col">${bud>0
-          ?`<div class="avail-main" style="color:${isOver?'var(--warn)':c3}">
+      const ac=rb<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
+
+      const cells=weekdays.map((d,i)=>{
+        const isActive=!w.split||w.inM.some(x=>fmt(x)===fmt(d));
+        const dk=fmt(d);const v=S.projDay[`${dk}|${p.id}`]??'';
+        const inp=isActive
+          ?`<input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color}"
+              type="number" min="0" step="0.25" value="${v}" placeholder="0"
+              onchange="setProjDayHrs('${dk}','${p.id}',this.value)"
+              onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.22)}'" onblur="this.style.boxShadow='none'">`
+          :`<input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0"
+              onchange="setProjDayHrs('${dk}','${p.id}',this.value)">`;
+        const afterSep=sepIdx===i?`<td class="sc"><span class="sep-line"></span></td>`:'';
+        return`<td>${inp}</td>${afterSep}`;
+      }).join('');
+
+      const availCell=bud>0
+        ?`<td class="avail-cell" style="background:${isOver?'rgba(224,144,48,.06)':''}">
+            <div class="avail-main" style="color:${isOver?'var(--warn)':ac}">
               ${ppw!==null?fmtH(ppw)+' u/wk':rb>=0?fmtH(rb)+' u':fmtH(Math.abs(rb))+' te veel'}
-              ${isOver?`<span style="font-size:12px">⚠</span>`:''}
+              ${isOver?'⚠':''}
             </div>
-            <div class="avail-sub">${rb>=0?fmtH(rb)+' u resterend':fmtH(Math.abs(rb))+' over budget'}${remWks>0?' · '+remWks+' wk':''}</div>`
-          :`<span class="nb">Geen budget</span>`}
-        </div>
-      </div>`;
+            <div class="avail-sub">${fmtH(rb)} u · ${remWks} wk</div>
+          </td>`
+        :`<td class="avail-cell"><span style="font-size:11px;color:var(--muted)">–</span></td>`;
+
+      return`<tr style="${isOver?'background:rgba(224,144,48,.04)':''}">
+        <td class="pnc"><div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>
+        ${cells}
+        <td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'}</td>
+        ${availCell}
+      </tr>`;
     }).join('');
-    const tb=`<div class="wtb">
-      <div class="bm"><span>${fmtH(totalHrs)} u van ${fmtH(effTarget)} u${absHrs>0?` (weekdoel ${S.target} – ${fmtH(absHrs)} afwezigheid)`:' weekdoel'}</span><span>${pct.toFixed(0)}%</span></div>
-      <div class="bt"><div class="bf" style="width:${pct}%;background:${totalHrs>=effTarget?'var(--success)':'var(--ink)'}"></div></div>
-    </div>`;
-    pc=thead+rows+tb;
+
+    // Day total row
+    const dayTotCells=weekdays.map((d,i)=>{
+      const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);
+      const afterSep=sepIdx===i?`<td class="sc"></td>`:'';
+      return`<td>${t>0?fmtH(t):'–'}</td>${afterSep}`;
+    }).join('');
+    const totRow=`<tr class="tr">
+      <td class="pnc">Dag totaal</td>${dayTotCells}
+      <td>${totalHrs>0?fmtH(totalHrs):'–'}</td>
+      <td class="ac"></td>
+    </tr>`;
+
+    // Month label row (split weeks only)
+    let moLblRow='';
+    if(w.split&&sepIdx>=0){
+      const inMWkCount=weekdays.filter(d=>w.inM.some(x=>fmt(x)===fmt(d))).length;
+      const outMWkCount=weekdays.length-inMWkCount;
+      const firstIsIn=w.inM.some(x=>fmt(x)===fmt(weekdays[0]));
+      const inMN=MONTHS[S.mo];const outMN=MONTHS[w.outM[0].getMonth()];
+      moLblRow=firstIsIn
+        ?`<tr><td></td><td colspan="${inMWkCount}" style="text-align:center;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding-top:4px">${inMN} ↑</td><td class="sc"></td><td colspan="${outMWkCount}" style="text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:4px">${outMN} ↑</td><td></td><td></td></tr>`
+        :`<tr><td></td><td colspan="${outMWkCount}" style="text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:4px">${outMN} ↑</td><td class="sc"></td><td colspan="${inMWkCount}" style="text-align:center;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding-top:4px">${inMN} ↑</td><td></td><td></td></tr>`;
+    }
+
+    tableContent=`<div class="day-table-scroll"><table class="sdt">
+      <thead><tr>
+        <th class="pc">Project</th>
+        ${colHeads}
+        <th class="tc">Week</th>
+        <th class="ac">Beschikb./wk</th>
+      </tr></thead>
+      <tbody>${projRows}${totRow}${moLblRow}</tbody>
+    </table></div>`;
   }
 
-  // Daily hours verification (non-split weeks only — split weeks already have per-day project table)
-  const dayVerifyRow = !w.split ? (()=>{
-    const inputs=w.days.map((d,i)=>{
-      const dk=fmt(d),isWknd=i>=5,v=S.dayTotals[dk]??'';
-      return`<div class="dvc">
-        <label>${DAYS[i]}</label>
-        <div class="dv-date">${d.getDate()}</div>
-        <input class="dv-input ${isWknd?'wknd':''}" type="number" min="0" step="0.25"
-          value="${v}" placeholder="0"
-          onchange="setDayTotal('${dk}',this.value)"
-          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-      </div>`;
-    }).join('');
-    const daySum=w.days.reduce((s,d)=>s+(parseFloat(S.dayTotals[fmt(d)])||0),0);
-    const projTotal=getTotalWkHrs(w);
-    const diff=Math.round((daySum-projTotal)*100)/100;
-    const hasData=daySum>0||projTotal>0;
-    const status=!hasData?''
-      :Math.abs(diff)<0.01?`<span class="dv-ok">✓ Klopt (${fmtH(daySum)} u)</span>`
-      :`<span class="dv-diff">⚠ Verschil: ${diff>0?'+':''}${fmtH(diff)} u</span>
-        <span style="font-size:11px;color:var(--muted)">Dag ${fmtH(daySum)} u · Project ${fmtH(projTotal)} u</span>`;
-    return`<div class="day-verify-row">
-      <div class="day-verify-title">Dagelijkse uren — verificatie</div>
-      <div class="day-verify-grid">${inputs}</div>
-      ${status?`<div class="dv-status">${status}</div>`:''}
-    </div>`;
-  })() : '';
-
-  // Absence inputs
-  const absence=`<div class="absence-row">
-    <span class="absence-label">Afwezigheid</span>
-    <div class="absence-group">
-      <span>🏛</span><label>Feestdag</label>
-      <input class="absence-input" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|holiday`]??''}" placeholder="0"
-        onchange="setAbsence('${w.key}','holiday',this.value)"> u
+  // Progress bar + absence row
+  const footer=`<div class="week-footer" style="margin-top:10px">
+    <div class="week-bar-wrap">
+      <div class="bm">
+        <span>${fmtH(totalHrs)} u van ${fmtH(effTarget)} u${absHrs>0?` (${S.target} – ${fmtH(absHrs)} afwezigheid)`:''}</span>
+        <span>${pct.toFixed(0)}%</span>
+      </div>
+      <div class="bt"><div class="bf" style="width:${pct}%;background:${totalHrs>=effTarget?'var(--success)':'var(--ink)'}"></div></div>
     </div>
-    <div class="absence-group">
-      <span>✈</span><label>Vakantie</label>
-      <input class="absence-input" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|vacation`]??''}" placeholder="0"
-        onchange="setAbsence('${w.key}','vacation',this.value)"> u
+    <div class="absence-wrap">
+      <span class="absence-label">Afwezigheid</span>
+      <div class="abs-grp"><span>🏛</span><label>Feestdag</label>
+        <input class="abs-inp" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|holiday`]??''}" placeholder="0" onchange="setAbsence('${w.key}','holiday',this.value)"> u</div>
+      <div class="abs-grp"><span>✈</span><label>Vakantie</label>
+        <input class="abs-inp" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|vacation`]??''}" placeholder="0" onchange="setAbsence('${w.key}','vacation',this.value)"> u</div>
+      <div class="abs-grp"><span>🤒</span><label>Ziek</label>
+        <input class="abs-inp" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|sick`]??''}" placeholder="0" onchange="setAbsence('${w.key}','sick',this.value)"> u</div>
+      ${absHrs>0?`<span class="abs-eff">→ effectief ${fmtH(effTarget)} u</span>`:''}
     </div>
-    <div class="absence-group">
-      <span>🤒</span><label>Ziek</label>
-      <input class="absence-input" type="number" min="0" step="0.25" value="${S.absences[`${w.key}|sick`]??''}" placeholder="0"
-        onchange="setAbsence('${w.key}','sick',this.value)"> u
-    </div>
-    ${absHrs>0?`<span class="absence-effective">→ Effectief weekdoel: ${fmtH(effTarget)} u</span>`:''}
   </div>`;
 
   // Forecast
   const mBud=S.target*weeks.length;
   const usedSoFar=weeks.slice(0,wIdx+1).reduce((s,wk)=>s+getMonthWkHrs(wk),0);
   const remMonth=mBud-usedSoFar;const remWksF=weeks.length-(wIdx+1);const perWk=remWksF>0?remMonth/remWksF:null;
-  let fcHtml='';
-  if(S.projects.length){
-    const vc=perWk===null?'var(--muted)':perWk<0?'var(--danger)':perWk<S.target*.6?'var(--warn)':'var(--success)';
-    const mainLine=remWksF===0
-      ?`<span class="fc-lbl">Laatste week</span><span class="fc-val" style="color:var(--muted)">${remMonth>=0?fmtH(remMonth)+' u resterend':fmtH(Math.abs(remMonth))+' u te veel'}</span>`
-      :`<span class="fc-lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Na deze week: ${remMonth>=0?fmtH(remMonth)+' u over '+remWksF+' wk':fmtH(Math.abs(remMonth))+' u te veel'}</span>${perWk!==null?`<span class="fc-val" style="color:${vc}">${fmtH(perWk)} u/week</span>`:''}`;
-    const chips=sortedProjects().map(p=>{
-      const bud=getProjBudget(p.id);if(!bud)return'';
-      const pu=getProjMonthUsedUpTo(p.id,wIdx,weeks);const bp=Math.min(100,(pu/bud)*100);
-      return`<span class="fc-chip ${pu>bud?'over':bp>80?'tight':''}">
-        <span class="dot" style="background:${p.color};width:7px;height:7px;flex-shrink:0"></span>
-        ${esc(p.name)}: ${fmtH(pu)} / ${fmtH(bud)} u <span style="opacity:.5;font-size:10px">(${bp.toFixed(0)}%)</span>
-      </span>`;
-    }).filter(Boolean).join('');
-    fcHtml=`<div class="fc-row"><div class="fc-main">${mainLine}</div>${chips?`<div class="fc-chips">${chips}</div>`:''}</div>`;
-  }
+  const vc=perWk===null?'var(--muted)':perWk<0?'var(--danger)':perWk<S.target*.6?'var(--warn)':'var(--success)';
+  const fcHtml=S.projects.length?`<div class="fc-row">
+    ${remWksF===0
+      ?`<span class="fc-lbl">Laatste week</span><span class="fc-val" style="color:var(--muted)">${fmtH(Math.abs(remMonth))} u ${remMonth>=0?'resterend':'te veel'}</span>`
+      :`<span class="fc-lbl">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Na deze week: ${fmtH(Math.abs(remMonth))} u ${remMonth>=0?'resterend':'te veel'} · ${remWksF} wk
+        </span>
+        ${perWk!==null?`<span class="fc-val" style="color:${vc}">${fmtH(perWk)} u/wk</span>`:''}`
+    }
+  </div>`:'' ;
 
-  // GCal import button
-  const importBtn=S.gcalConnected?`<button class="import-gcal-btn" data-import="${w.key}" onclick="importWeekFromGcal('${w.key}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Importeer uit Google Agenda</button>`:'';
-
-  // Split per-day table
-  let splitSec='';
-  if(w.split&&visProjects.length){
-    const outMN=w.outM.length?MONTHS[w.outM[0].getMonth()]:'';
-    const dTh=(days,cls)=>days.map(d=>{const di=(d.getDay()+6)%7;return`<th class="${cls}" style="min-width:54px">${DAYS[di]}<br><span style="font-weight:400;opacity:.65">${d.getDate()}</span></th>`;}).join('');
-    const pRows=visProjects.map(p=>{
-      const inC=w.inM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color}" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)" onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.25)}'" onblur="this.style.boxShadow='none'"></td>`;}).join('');
-      const outC=w.outM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)"></td>`;}).join('');
-      const wt=getProjWkHrs(w,p.id);
-      return`<tr><td class="pnc"><div style="display:flex;align-items:center;gap:6px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>${inC}${w.outM.length?`<td class="sc"><span class="sep-line"></span></td>${outC}`:''}<td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wt>0?fmtH(wt):'–'}</td></tr>`;
-    }).join('');
-    const dTotC=days=>days.map(d=>{const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);return`<td>${t>0?fmtH(t):'–'}</td>`;}).join('');
-    const gTot=getTotalWkHrs(w);
-    splitSec=`<div class="split-sec"><div class="split-sec-title">✂ Dagelijkse projecturen</div>
-      <div class="split-scroll"><table class="sdt">
-        <thead><tr><th class="pc">Project</th>${dTh(w.inM,'dm')}${w.outM.length?`<th class="sc"></th>${dTh(w.outM,'do')}`:''}  <th class="tc">Week</th></tr></thead>
-        <tbody>${pRows}
-          <tr class="tr"><td class="pnc">Dag totaal</td>${dTotC(w.inM)}${w.outM.length?`<td class="sc"></td>${dTotC(w.outM)}`:''}<td>${gTot>0?fmtH(gTot):'–'}</td></tr>
-          <tr><td></td><td colspan="${w.inM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${MONTHS[S.mo]} ↑</td>${w.outM.length?`<td class="sc"></td><td colspan="${w.outM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${outMN} ↑</td>`:''}<td></td></tr>
-        </tbody>
-      </table></div>
-    </div>`;
-  }
+  const importBtn=S.gcalConnected?`<button class="import-gcal-btn" data-import="${w.key}" onclick="importWeekFromGcal('${w.key}')">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Importeer uit Google Agenda</button>`:'';
 
   return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''}">
-    ${head}<div class="week-body">${pc}${dayVerifyRow}${absence}${fcHtml}${importBtn}${splitSec}</div>
+    ${head}
+    <div class="week-body">${tableContent}${footer}${fcHtml}${importBtn}</div>
   </div>`;
 }
 
@@ -858,7 +837,7 @@ function rSummary(weeks){
     const bud=getProjBudget(p.id);if(!bud)return'';
     const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);const rem=bud-used;
     return`<div class="sc2-chip" style="border-color:${ha(p.color,.25)}">
-      <div style="width:8px;height:8px;border-radius:50%;background:${p.color}"></div>
+      <div class="dot" style="background:${p.color}"></div>
       <span>${esc(p.name)}:</span>
       <span style="font-weight:700;color:${rem<0?'var(--danger)':rem<bud*.1?'var(--warn)':'var(--ink)'}">${fmtH(used)} / ${fmtH(bud)} u</span>
     </div>`;
@@ -867,7 +846,7 @@ function rSummary(weeks){
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${chips?'12px':'0'}">
       <div>
         <div style="font-size:15px;font-weight:700;color:var(--success)">Maandtotaal ${MONTHS[S.mo]}</div>
-        <div style="font-size:12px;color:var(--accent);margin-top:2px">Gebaseerd op projecturen</div>
+        <div style="font-size:12px;color:var(--accent);margin-top:2px">Gebaseerd op dagelijkse projecturen</div>
       </div>
       <div style="font-size:28px;font-weight:900;color:var(--success);font-family:'DM Mono',monospace">${fmtH(total)}<span style="font-size:14px;font-weight:400"> uur</span></div>
     </div>
@@ -924,13 +903,13 @@ function rChart(ap,md){
   }
   md.forEach(({mo,bp},mi)=>{
     const x=mL+mi*gap+(gap-bW)/2;let sy=mT+cH;
-    vp.forEach(p=>{const v=bp[p.id];if(v<=0)return;const bh=v*yScale;sy-=bh;svg+=`<rect x="${x}" y="${sy}" width="${bW}" height="${bh}" fill="${p.color}" rx="2" opacity=".85"/>`;});
+    vp.forEach(p=>{const v=bp[p.id];if(!v)return;const bh=v*yScale;sy-=bh;svg+=`<rect x="${x}" y="${sy}" width="${bW}" height="${bh}" fill="${p.color}" rx="2" opacity=".85"/>`;});
     svg+=`<text x="${x+bW/2}" y="${mT+cH+16}" font-size="10" fill="var(--muted)" text-anchor="middle" font-family="DM Sans,sans-serif">${MONTHS_SHORT[mo]}</text>`;
     const tot=vp.reduce((s,p)=>s+bp[p.id],0);
     if(tot>0)svg+=`<text x="${x+bW/2}" y="${mT+cH-tot*yScale-4}" font-size="9" fill="var(--ink)" text-anchor="middle" font-weight="600" font-family="DM Sans,sans-serif">${fmtH(tot)}</text>`;
   });
   svg+=`</svg>`;
-  return`<div class="chart-section"><div class="chart-header"><span class="chart-title">Uren per maand — ${S.chartYr}</span><div class="proj-filter">${chips}</div></div><div class="chart-svg-wrap">${svg}</div></div>`;
+  return`<div class="chart-section"><div class="chart-header"><span style="font-size:13px;font-weight:700">Uren per maand — ${S.chartYr}</span><div class="proj-filter">${chips}</div></div><div style="width:100%;overflow-x:auto">${svg}</div></div>`;
 }
 
 // ════════ START ════════
