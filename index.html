@@ -314,8 +314,8 @@ function weeksOfMonth(yr,mo){
 
 // ════════ CALCULATIONS ════════
 function getProjWkHrs(w,pid){
-  const werkdagen = w.days.filter((_,i)=>i<5);
-  return werkdagen.reduce((s,d)=>s+(parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0),0);
+  if(w.split)return w.days.reduce((s,d)=>s+(parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0),0);
+  return parseFloat(S.projWeek[`${w.key}|${pid}`])||0;
 }
 function getProjDayHrs(d,pid){return parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0;}
 function getTotalWkHrs(w){return S.projects.reduce((s,p)=>s+getProjWkHrs(w,p.id),0);}
@@ -379,9 +379,8 @@ function removeProject(id){
   S.projects=S.projects.filter(p=>p.id!==id);saveState();render();
 }
 function copyBudgets(mode){
-  const prevMo=S.mo===0?11:S.mo-1;
-  const prevYr=S.mo===0?S.yr-1:S.yr;
-  const tMkey=mkey(S.yr,S.mo), sMkey=mkey(prevYr,prevMo);
+  const tMo=S.mo===11?0:S.mo+1, tYr=S.mo===11?S.yr+1:S.yr;
+  const tMkey=mkey(tYr,tMo), sMkey=mkey(S.yr,S.mo);
   const srcBud=S.budgets[sMkey]||{};
   const projs=mode==='all'?S.projects:S.projects.filter(p=>(parseFloat(srcBud[p.id])||0)>0);
   if(!projs.length){toast('Geen projecten om te kopiëren');return;}
@@ -724,9 +723,12 @@ function rWeek(w,weeks,wIdx){
       const ppw=bud>0&&remWks>0?floorQ(rb/remWks):null;
       const isOver=overrunPids.has(p.id);
       const c3=rb<0?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
-      const inp=`<span style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">
-        ${wkH>0?fmtH(wkH):'–'} u
-      </span>`;
+      const inp=w.split
+        ?`<span style="font-size:14px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'} u</span>`
+        :`<input class="phi" style="border-color:${ha(p.color,.25)};color:${p.color};background:var(--input-bg)"
+            type="number" min="0" step="0.25" value="${S.projWeek[`${w.key}|${p.id}`]??''}" placeholder="0"
+            onchange="setProjHrs('${w.key}','${p.id}',this.value)"
+            onfocus="this.style.boxShadow='0 0 0 3px ${ha(p.color,.2)}'" onblur="this.style.boxShadow='none'">`;
       return`<div class="pe ${isOver?'warn-row':''}">
         <div class="pen"><div class="dot" style="background:${p.color}"></div><span>${esc(p.name)}</span></div>
         <div style="text-align:center">${inp}</div>
@@ -822,74 +824,25 @@ function rWeek(w,weeks,wIdx){
 
   // Split per-day table
   let splitSec='';
-  if(visProjects.length){
-    const werkdagen = w.days.filter((_,i)=>i<5);
+  if(w.split&&visProjects.length){
     const outMN=w.outM.length?MONTHS[w.outM[0].getMonth()]:'';
-
-    const dTh=(days,cls)=>days.map(d=>{
-      const di=(d.getDay()+6)%7;
-      return`<th class="${cls}" style="min-width:54px">${DAYS[di]}<br><span style="font-weight:400;opacity:.65">${d.getDate()}</span></th>`;
-    }).join('');
-
+    const dTh=(days,cls)=>days.map(d=>{const di=(d.getDay()+6)%7;return`<th class="${cls}" style="min-width:54px">${DAYS[di]}<br><span style="font-weight:400;opacity:.65">${d.getDate()}</span></th>`;}).join('');
     const pRows=visProjects.map(p=>{
-      const cells=werkdagen.map(d=>{
-        const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';
-        const dim = d.getMonth()!==S.mo;
-        return`<td>
-          <input class="dpi ${dim?'dim':''}"
-            style="border-color:${ha(p.color,.3)};color:${p.color}"
-            type="number" min="0" step="0.25"
-            value="${v}" placeholder="0"
-            onchange="setProjDayHrs('${dk}','${p.id}',this.value)"
-            onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.25)}'"
-            onblur="this.style.boxShadow='none'">
-        </td>`;
-      }).join('');
-
+      const inC=w.inM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color}" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)" onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.25)}'" onblur="this.style.boxShadow='none'"></td>`;}).join('');
+      const outC=w.outM.map(d=>{const dk=fmt(d),v=S.projDay[`${dk}|${p.id}`]??'';return`<td><input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0" onchange="setProjDayHrs('${dk}','${p.id}',this.value)"></td>`;}).join('');
       const wt=getProjWkHrs(w,p.id);
-
-      return`<tr>
-        <td class="pnc">
-          <div style="display:flex;align-items:center;gap:6px">
-            <div class="dot" style="background:${p.color}"></div>
-            ${esc(p.name)}
-          </div>
-        </td>
-        ${cells}
-        <td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">
-          ${wt>0?fmtH(wt):'–'}
-        </td>
-      </tr>`;
+      return`<tr><td class="pnc"><div style="display:flex;align-items:center;gap:6px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>${inC}${w.outM.length?`<td class="sc"><span class="sep-line"></span></td>${outC}`:''}<td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wt>0?fmtH(wt):'–'}</td></tr>`;
     }).join('');
-
-    const dTotC=werkdagen.map(d=>{
-      const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);
-      return`<td>${t>0?fmtH(t):'–'}</td>`;
-    }).join('');
-
+    const dTotC=days=>days.map(d=>{const t=S.projects.reduce((s,p)=>s+getProjDayHrs(d,p.id),0);return`<td>${t>0?fmtH(t):'–'}</td>`;}).join('');
     const gTot=getTotalWkHrs(w);
-
-    splitSec=`<div class="${w.split?'split-sec':'split-sec'}">
-      <div class="split-sec-title">${w.split?'✂ Gesplitste week':'Dagelijkse projecturen'}</div>
-      <div class="split-scroll">
-        <table class="sdt">
-          <thead>
-            <tr>
-              <th class="pc">Project</th>
-              ${dTh(werkdagen,'dm')}
-              <th class="tc">Week</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${pRows}
-            <tr class="tr">
-              <td class="pnc">Dag totaal</td>
-              ${dTotC}
-              <td>${gTot>0?fmtH(gTot):'–'}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    splitSec=`<div class="split-sec"><div class="split-sec-title">✂ Dagelijkse projecturen</div>
+      <div class="split-scroll"><table class="sdt">
+        <thead><tr><th class="pc">Project</th>${dTh(w.inM,'dm')}${w.outM.length?`<th class="sc"></th>${dTh(w.outM,'do')}`:''}  <th class="tc">Week</th></tr></thead>
+        <tbody>${pRows}
+          <tr class="tr"><td class="pnc">Dag totaal</td>${dTotC(w.inM)}${w.outM.length?`<td class="sc"></td>${dTotC(w.outM)}`:''}<td>${gTot>0?fmtH(gTot):'–'}</td></tr>
+          <tr><td></td><td colspan="${w.inM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${MONTHS[S.mo]} ↑</td>${w.outM.length?`<td class="sc"></td><td colspan="${w.outM.length}" style="text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:5px">${outMN} ↑</td>`:''}<td></td></tr>
+        </tbody>
+      </table></div>
     </div>`;
   }
 
