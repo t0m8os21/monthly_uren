@@ -205,6 +205,7 @@ let S={
   projDay:{},    // "YYYY-MM-DD|projId" -> hours  (single source of truth)
   absences:{},   // "weekKey|holiday|vacation|sick" -> hours
   gcalConnected:false, gcalToken:null, gcalMappings:[],
+  importPreview:null,  // { weekKey, data: {"dk|pid": hrs}, selDays: {dk:bool}, selProjs: {pid:bool} }
   darkMode:false,
   view:'month', chartYr:_n.getFullYear(), showChart:false, chartFilter:{},
   collapsedWks:{}, showBudgetSummary:true,
@@ -416,19 +417,56 @@ async function importWeekFromGcal(weekKey){
     if(resp.status===401){S.gcalConnected=false;S.gcalToken=null;saveState();render();toast('Sessie verlopen, verbind opnieuw');return;}
     events=(await resp.json()).items||[];
   }catch{toast('Fout bij ophalen agenda');render();return;}
-  let matched=0;
+  // Collect into preview dict (replace, not add)
+  const previewData={};
   for(const ev of events){
     const title=(ev.summary||'').toLowerCase();
     const rule=S.gcalMappings.find(m=>title.includes(m.keyword.toLowerCase()));
     if(!rule)continue;const dur=floorQ(getEventDurHrs(ev));if(dur<=0)continue;
     if(!ev.start?.dateTime)continue;
     const d=new Date(ev.start.dateTime);
-    const dayIdx=(d.getDay()+6)%7;if(dayIdx>=5)continue; // skip weekends
+    if((d.getDay()+6)%7>=5)continue; // skip weekends
     const dk=fmt(d);const k=`${dk}|${rule.projId}`;
-    S.projDay[k]=(parseFloat(S.projDay[k])||0)+dur;matched++;
+    previewData[k]=(previewData[k]||0)+dur;
   }
-  if(!matched){toast('Geen overeenkomsten gevonden');render();return;}
-  saveState();render();toast(`${matched} event${matched!==1?'s':''} geïmporteerd ✓`);
+  if(!Object.keys(previewData).length){toast('Geen overeenkomsten gevonden');render();return;}
+  // Open preview modal
+  const days=[...new Set(Object.keys(previewData).map(k=>k.split('|')[0]))].sort();
+  const pids=[...new Set(Object.keys(previewData).map(k=>k.split('|').slice(1).join('|')))];
+  S.importPreview={
+    weekKey,
+    data:previewData,
+    selDays:Object.fromEntries(days.map(d=>[d,true])),
+    selProjs:Object.fromEntries(pids.map(p=>[p,true]))
+  };
+  render();
+}
+function toggleImportDay(dk){if(!S.importPreview)return;S.importPreview.selDays[dk]=!S.importPreview.selDays[dk];render();}
+function toggleImportProj(pid){if(!S.importPreview)return;S.importPreview.selProjs[pid]=!S.importPreview.selProjs[pid];render();}
+function cancelImport(){S.importPreview=null;render();}
+function confirmImport(){
+  if(!S.importPreview)return;
+  const{weekKey,data,selDays,selProjs}=S.importPreview;
+  for(const[key,hrs]of Object.entries(data)){
+    const[dk,...rest]=key.split('|');const pid=rest.join('|');
+    if(selDays[dk]&&selProjs[pid]) S.projDay[`${dk}|${pid}`]=hrs; // replace
+  }
+  // Clear entries for selected days/projs that had NO calendar event (replace with 0)
+  const weeks=weeksOfMonth(S.yr,S.mo);const w=weeks.find(x=>x.key===weekKey);
+  if(w) wkDays(w).forEach(d=>{
+    const dk=fmt(d);if(!selDays[dk])return;
+    Object.keys(selProjs).forEach(pid=>{
+      if(selProjs[pid]&&!data[`${dk}|${pid}`]) delete S.projDay[`${dk}|${pid}`];
+    });
+  });
+  S.importPreview=null;
+  saveState();render();
+  toast('Uren geïmporteerd ✓');
+}
+function clearProjWeek(weekKey,pid){
+  const weeks=weeksOfMonth(S.yr,S.mo);const w=weeks.find(x=>x.key===weekKey);if(!w)return;
+  wkDays(w).forEach(d=>{delete S.projDay[`${fmt(d)}|${pid}`];});
+  saveState();render();
 }
 
 // ════════ UTILS ════════
@@ -454,9 +492,94 @@ function render(){
     (isMonth
       ? rBudgetSummary(weeks)+`<div class="weeks">${weeks.map((w,i)=>rWeek(w,weeks,i)).join('')}</div>`+rSummary(weeks)
       : rYear()
-    )+`<div class="footer">Data wordt automatisch opgeslagen · Klik op weekdoel om aan te passen</div>`;
+    )+`<div class="footer">Data wordt automatisch opgeslagen · Klik op weekdoel om aan te passen</div>`+
+    rImportModal();
   if(S.editTarget){const i=document.getElementById('tgt-inp');if(i){i.focus();i.select();}}
   if(S.showPanel){const i=document.getElementById('npi');if(i)i.value=S.newName;}
+}
+
+// ════════ IMPORT MODAL ════════
+function rImportModal(){
+  if(!S.importPreview)return'';
+  const{weekKey,data,selDays,selProjs}=S.importPreview;
+  const days=Object.keys(selDays).sort();
+  const projs=Object.keys(selProjs).map(pid=>S.projects.find(p=>p.id===pid)).filter(Boolean);
+  const weeks=weeksOfMonth(S.yr,S.mo);const w=weeks.find(x=>x.key===weekKey);
+  const wLabel=w?`Week ${w.wk} — ${w.inM[0].getDate()}–${w.inM[w.inM.length-1].getDate()} ${MONTHS[S.mo]}`:'';
+  const nSelDays=Object.values(selDays).filter(Boolean).length;
+  const nSelProjs=Object.values(selProjs).filter(Boolean).length;
+  const canImport=nSelDays>0&&nSelProjs>0;
+
+  // Day header cells with toggle checkbox
+  const dayHeads=days.map(dk=>{
+    const d=new Date(dk);const di=(d.getDay()+6)%7;const on=selDays[dk];
+    return`<th style="text-align:center;padding:0 8px 10px;cursor:pointer;min-width:64px" onclick="toggleImportDay('${dk}')">
+      <div style="width:20px;height:20px;border-radius:5px;border:2px solid var(--accent);background:${on?'var(--accent)':'transparent'};display:flex;align-items:center;justify-content:center;margin:0 auto 5px">
+        ${on?`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`:''}
+      </div>
+      <div style="font-size:12px;font-weight:700;color:${on?'var(--text)':'var(--muted)'}">${DAYS_WK[di]}</div>
+      <div style="font-size:10px;color:var(--muted)">${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}</div>
+    </th>`;
+  }).join('');
+
+  // Project rows
+  const projRows=projs.map(p=>{
+    const onP=selProjs[p.id];
+    const cells=days.map(dk=>{
+      const hrs=data[`${dk}|${p.id}`]||0;const onD=selDays[dk];
+      return`<td style="text-align:center;font-family:'DM Mono',monospace;font-size:14px;font-weight:${hrs>0?'700':'400'};color:${hrs>0?(onP&&onD?p.color:'var(--muted)'):'var(--muted)'};opacity:${onP&&onD?1:.4};padding:8px">
+        ${hrs>0?fmtH(hrs):'–'}
+      </td>`;
+    }).join('');
+    return`<tr style="border-top:1px solid var(--border)">
+      <td style="padding:8px 16px 8px 0;cursor:pointer;white-space:nowrap" onclick="toggleImportProj('${p.id}')">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:18px;height:18px;border-radius:5px;border:2px solid ${p.color};background:${onP?p.color:'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+            ${onP?`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>`:''}
+          </div>
+          <div class="dot" style="background:${p.color}"></div>
+          <span style="font-size:13px;font-weight:500;color:${onP?'var(--text)':'var(--muted)'}">${esc(p.name)}</span>
+        </div>
+      </td>${cells}
+    </tr>`;
+  }).join('');
+
+  return`<div style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px" onclick="cancelImport()">
+    <div style="background:var(--surface);border-radius:14px;padding:24px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)" onclick="event.stopPropagation()">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:16px;font-weight:700">Importeer uit Google Agenda</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${wLabel}</div>
+        </div>
+        <button onclick="cancelImport()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;padding:0 2px;margin-left:12px">✕</button>
+      </div>
+
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Klik op een dag of project om te selecteren of deselecteren.</div>
+
+      <div style="overflow-x:auto;margin-bottom:14px">
+        <table style="border-collapse:collapse;min-width:max-content">
+          <thead><tr>
+            <th style="text-align:left;padding:0 16px 10px 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Project</th>
+            ${dayHeads}
+          </tr></thead>
+          <tbody>${projRows}</tbody>
+        </table>
+      </div>
+
+      <div style="padding:9px 12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--warn);display:flex;align-items:center;gap:7px;margin-bottom:16px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Bestaande uren voor geselecteerde dagen &amp; projecten worden <strong style="margin-left:3px">overschreven</strong>.
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="cancelImport()" style="padding:9px 20px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)">Annuleren</button>
+        <button onclick="confirmImport()" ${!canImport?'disabled':''} style="padding:9px 20px;border-radius:9px;border:none;background:${canImport?'var(--accent)':'var(--muted)'};color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:${canImport?'pointer':'not-allowed'}">
+          Importeer${canImport?` (${nSelProjs} project${nSelProjs!==1?'en':''}, ${nSelDays} dag${nSelDays!==1?'en':''})`:''}
+        </button>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ════════ HEADER ════════
@@ -740,11 +863,25 @@ function rWeek(w,weeks,wIdx){
           </td>`
         :`<td class="avail-cell"><span style="font-size:11px;color:var(--muted)">–</span></td>`;
 
+      const trashBtn=`<td style="padding:0 2px;text-align:center">
+        <button onclick="clearProjWeek('${w.key}','${p.id}')" title="Wis uren voor dit project deze week"
+          style="background:none;border:none;cursor:pointer;color:var(--muted);padding:5px;border-radius:6px;line-height:1;display:inline-flex;align-items:center"
+          onmouseover="this.style.color='var(--danger)';this.style.background='var(--surface2)'"
+          onmouseout="this.style.color='var(--muted)';this.style.background='none'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+      </td>`;
+
       return`<tr style="${isOver?'background:rgba(224,144,48,.04)':''}">
         <td class="pnc"><div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>
         ${cells}
         <td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'}</td>
         ${availCell}
+        ${trashBtn}
       </tr>`;
     }).join('');
 
@@ -758,6 +895,7 @@ function rWeek(w,weeks,wIdx){
       <td class="pnc">Dag totaal</td>${dayTotCells}
       <td>${totalHrs>0?fmtH(totalHrs):'–'}</td>
       <td class="ac"></td>
+      <td></td>
     </tr>`;
 
     // Month label row (split weeks only)
@@ -778,6 +916,7 @@ function rWeek(w,weeks,wIdx){
         ${colHeads}
         <th class="tc">Week</th>
         <th class="ac">Beschikb./wk</th>
+        <th style="width:28px"></th>
       </tr></thead>
       <tbody>${projRows}${totRow}${moLblRow}</tbody>
     </table></div>`;
