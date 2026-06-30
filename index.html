@@ -30,7 +30,7 @@ body.dark {
   --input-bg:#242220;
 }
 body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px 16px 40px; transition:background .2s,color .2s; }
-.app { max-width:min(1300px, 96vw); width:max-content; min-width:760px; margin:0 auto; }
+.app { max-width:96vw; width:fit-content; margin:0 auto; }
 
 /* Header */
 .header { background:var(--header-bg); color:var(--header-fg); border-radius:14px; padding:18px 22px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -109,7 +109,7 @@ select { background:var(--input-bg); color:var(--text); border:1.5px solid var(-
 .week-body { padding:12px 14px; }
 
 /* Unified day table */
-.day-table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.day-table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; display:flex; justify-content:center; }
 .sdt { border-collapse:separate; border-spacing:0; min-width:max-content; }
 .sdt th { font-size:10px; font-weight:700; color:var(--muted); padding:0 6px 8px; text-align:center; white-space:nowrap; }
 .sdt th.pc { text-align:left; padding-left:2px; text-transform:uppercase; letter-spacing:.05em; min-width:100px; padding-right:10px; }
@@ -207,6 +207,7 @@ let S={
   gcalConnected:false, gcalToken:null, gcalMappings:[],
   darkMode:false,
   view:'month', chartYr:_n.getFullYear(), showChart:false, chartFilter:{},
+  showMonthChart:false, monthChartFilter:{},
   collapsedWks:{}, showBudgetSummary:true,
   showPanel:false, showData:false, showGcal:false,
   editTarget:false, newName:''
@@ -308,6 +309,7 @@ function wkDaysInMonth(w){return w.split?w.inM.filter(d=>(d.getDay()+6)%7<5):wkD
 function getProjDayHrs(d,pid){return parseFloat(S.projDay[`${fmt(d)}|${pid}`])||0;}
 function getProjWkHrs(w,pid){return wkDays(w).reduce((s,d)=>s+getProjDayHrs(d,pid),0);}
 function getTotalWkHrs(w){return S.projects.reduce((s,p)=>s+getProjWkHrs(w,p.id),0);}
+function getProjMonthWkHrs(w,pid){return wkDaysInMonth(w).reduce((s,d)=>s+getProjDayHrs(d,pid),0);}
 function getMonthWkHrs(w){return S.projects.reduce((s,p)=>s+wkDaysInMonth(w).reduce((s2,d)=>s2+getProjDayHrs(d,p.id),0),0);}
 function getMonthTotal(weeks){return weeks.reduce((s,w)=>s+getMonthWkHrs(w),0);}
 function getProjBudget(pid,yr,mo){return parseFloat(S.budgets[mkey(yr??S.yr,mo??S.mo)]?.[pid])||0;}
@@ -349,6 +351,8 @@ function setBudget(pid,mk,v){if(!S.budgets[mk])S.budgets[mk]={};S.budgets[mk][pi
 function toggleWk(key){S.collapsedWks[key]=!S.collapsedWks[key];render();}
 function toggleChart(){S.showChart=!S.showChart;render();}
 function toggleProjFilter(pid){S.chartFilter[pid]=!(S.chartFilter[pid]??true);render();}
+function toggleMonthChart(){S.showMonthChart=!S.showMonthChart;render();}
+function toggleMonthProjFilter(pid){S.monthChartFilter[pid]=!(S.monthChartFilter[pid]??true);render();}
 function toggleDark(){S.darkMode=!S.darkMode;saveState();applyDark();render();}
 function applyDark(){document.body.classList.toggle('dark',S.darkMode);}
 function addProject(){
@@ -452,7 +456,7 @@ function render(){
     rHeader(monthTot,isMonth)+
     rGcalPanel(cm,weeks)+rProjPanel(cm,weeks)+rDataPanel()+
     (isMonth
-      ? rBudgetSummary(weeks)+`<div class="weeks">${weeks.map((w,i)=>rWeek(w,weeks,i)).join('')}</div>`+rSummary(weeks)
+      ? rMonthChartSection(weeks)+rBudgetSummary(weeks)+`<div class="weeks">${weeks.map((w,i)=>rWeek(w,weeks,i)).join('')}</div>`+rSummary(weeks)
       : rYear()
     )+`<div class="footer">Data wordt automatisch opgeslagen · Klik op weekdoel om aan te passen</div>`;
   if(S.editTarget){const i=document.getElementById('tgt-inp');if(i){i.focus();i.select();}}
@@ -886,6 +890,43 @@ function rYear(){
       <tbody>${rows}<tr class="total-row"><td>Totaal</td>${totC}<td style="font-weight:900">${ytot>0?fmtH(ytot):'–'}</td></tr></tbody>
     </table></div>
   </div>`;
+}
+
+// ════════ MONTH CHART ════════
+function rMonthChartSection(weeks){
+  const ap=sortedProjects().filter(p=>weeks.some(w=>getProjMonthWkHrs(w,p.id)>0)||getProjBudget(p.id)>0);
+  if(!ap.length)return'';
+  return`<div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="chart-toggle-btn ${S.showMonthChart?'active':''}" onclick="toggleMonthChart()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+        ${S.showMonthChart?'Grafiek verbergen':'Grafiek tonen'}
+      </button>
+    </div>
+    ${S.showMonthChart?rMonthChart(ap,weeks):''}`;
+}
+function rMonthChart(ap,weeks){
+  const vp=ap.filter(p=>S.monthChartFilter[p.id]!==false);
+  const chips=ap.map(p=>{const on=S.monthChartFilter[p.id]!==false;return`<span class="filter-chip ${on?'on':''}" onclick="toggleMonthProjFilter('${p.id}')" style="${on?`border-color:${ha(p.color,.4)};background:${ha(p.color,.08)}`:''}"><span class="dot" style="background:${on?p.color:'var(--muted)'};width:8px;height:8px"></span>${esc(p.name)}</span>`;}).join('');
+  const n=weeks.length;
+  const W=Math.max(360,n*100),H=240,mL=42,mR=12,mT=12,mB=36,cW=W-mL-mR,cH=H-mT-mB,gap=cW/n,bW=Math.floor(gap*.5);
+  const wkHrs=weeks.map(w=>vp.reduce((s,p)=>s+getProjMonthWkHrs(w,p.id),0));
+  const maxV=Math.max(...wkHrs,S.target,1);
+  const yStep=Math.ceil(maxV/5/5)*5||1,yMax=yStep*5,yScale=cH/yMax;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block">`;
+  for(let i=0;i<=5;i++){
+    const y=mT+cH-i*yStep*yScale;
+    svg+=`<line x1="${mL}" y1="${y}" x2="${mL+cW}" y2="${y}" stroke="var(--border)" stroke-width="${i===0?1.5:.75}"/>`;
+    svg+=`<text x="${mL-6}" y="${y+4}" font-size="10" fill="var(--muted)" text-anchor="end" font-family="DM Sans,sans-serif">${i*yStep}</text>`;
+  }
+  weeks.forEach((w,wi)=>{
+    const x=mL+wi*gap+(gap-bW)/2;let sy=mT+cH;
+    vp.forEach(p=>{const v=getProjMonthWkHrs(w,p.id);if(!v)return;const bh=v*yScale;sy-=bh;svg+=`<rect x="${x}" y="${sy}" width="${bW}" height="${bh}" fill="${p.color}" rx="2" opacity=".85"/>`;});
+    svg+=`<text x="${x+bW/2}" y="${mT+cH+16}" font-size="10" fill="var(--muted)" text-anchor="middle" font-family="DM Sans,sans-serif">Wk ${w.wk}</text>`;
+    const tot=wkHrs[wi];
+    if(tot>0)svg+=`<text x="${x+bW/2}" y="${mT+cH-tot*yScale-4}" font-size="9" fill="var(--ink)" text-anchor="middle" font-weight="600" font-family="DM Sans,sans-serif">${fmtH(tot)}</text>`;
+  });
+  svg+=`</svg>`;
+  return`<div class="chart-section"><div class="chart-header"><span style="font-size:13px;font-weight:700">Uren per week — ${MONTHS[S.mo]} ${S.yr}</span><div class="proj-filter">${chips}</div></div><div style="width:100%;overflow-x:auto">${svg}</div></div>`;
 }
 
 // ════════ CHART ════════
