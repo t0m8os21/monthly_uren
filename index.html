@@ -119,6 +119,15 @@ select { background:var(--input-bg); color:var(--text); border:1.5px solid var(-
 .sdt th.ac { text-align:right; padding-right:4px; font-size:9px; white-space:nowrap; max-width:90px; }
 .sdt td { padding:4px 5px; vertical-align:middle; }
 .sdt td.pnc { font-size:13px; font-weight:500; padding-left:2px; padding-right:10px; white-space:nowrap; }
+.proj-bars { display:flex; flex-direction:column; gap:10px; }
+.proj-bar-row { display:flex; flex-direction:column; gap:4px; }
+.proj-bar-label { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12.5px; font-weight:600; }
+.proj-bar-vals { font-size:11px; font-weight:600; white-space:nowrap; flex:none; }
+.proj-bar-track { height:7px; border-radius:5px; background:var(--surface2); overflow:hidden; }
+.proj-bar-fill { height:100%; border-radius:5px; transition:width .2s; }
+.copy-prevwk-btn { flex:none; display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); cursor:pointer; opacity:.55; transition:opacity .12s,color .12s,border-color .12s; }
+.copy-prevwk-btn:hover { opacity:1; color:var(--accent); border-color:var(--accent); }
+tr:hover .copy-prevwk-btn { opacity:.85; }
 .sdt td.sc { padding:0 3px; }
 .sep-line { display:block; width:1px; min-height:32px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
 .sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
@@ -346,6 +355,17 @@ function nextChartYr(){S.chartYr++;render();}
 function setView(v){S.view=v;render();}
 function setTarget(v){S.target=parseFloat(v)||0;saveState();}
 function setProjDayHrs(dk,pid,v){S.projDay[`${dk}|${pid}`]=v;saveState();render();}
+function copyPrevWeekProj(wMonKey,pid){
+  const[y,m,dd]=wMonKey.split('-').map(Number);
+  const curMon=new Date(y,m-1,dd);const prevMon=new Date(curMon);prevMon.setDate(prevMon.getDate()-7);
+  for(let i=0;i<5;i++){
+    const cd=new Date(curMon);cd.setDate(cd.getDate()+i);
+    const pd=new Date(prevMon);pd.setDate(pd.getDate()+i);
+    const pv=S.projDay[`${fmt(pd)}|${pid}`];
+    if(pv!==undefined)S.projDay[`${fmt(cd)}|${pid}`]=pv;
+  }
+  saveState();render();
+}
 function setAbsence(wk,type,v){S.absences[`${wk}|${type}`]=v;saveState();render();}
 function setBudget(pid,mk,v){if(!S.budgets[mk])S.budgets[mk]={};S.budgets[mk][pid]=v;saveState();}
 function toggleWk(key){S.collapsedWks[key]=!S.collapsedWks[key];render();}
@@ -454,6 +474,7 @@ function render(){
   const isMonth=S.view==='month';
   document.getElementById('app').innerHTML=
     rHeader(monthTot,isMonth)+
+    (isMonth?rProjectProgress(weeks):'')+
     rGcalPanel(cm,weeks)+rProjPanel(cm,weeks)+rDataPanel()+
     (isMonth
       ? rMonthChartSection(weeks)+rBudgetSummary(weeks)+`<div class="weeks">${weeks.map((w,i)=>rWeek(w,weeks,i)).join('')}</div>`+rSummary(weeks)
@@ -754,7 +775,12 @@ function rWeek(w,weeks,wIdx){
         :`<td class="avail-cell"><span style="font-size:11px;color:var(--muted)">–</span></td>`;
 
       return`<tr style="${isOver?'background:rgba(224,144,48,.04)':''}">
-        <td class="pnc"><div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${p.color}"></div>${esc(p.name)}</div></td>
+        <td class="pnc"><div style="display:flex;align-items:center;gap:7px;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px;min-width:0"><div class="dot" style="background:${p.color}"></div><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</span></div>
+          <button class="copy-prevwk-btn" title="Kopieer vorige week (${esc(p.name)})" onclick="copyPrevWeekProj('${w.key}','${p.id}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div></td>
         ${cells}
         <td style="text-align:center;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:${p.color}">${wkH>0?fmtH(wkH):'–'}</td>
         ${availCell}
@@ -899,6 +925,28 @@ function rYear(){
       <tbody>${rows}<tr class="total-row"><td>Totaal</td>${totC}<td style="font-weight:900">${ytot>0?fmtH(ytot):'–'}</td></tr></tbody>
     </table></div>
   </div>`;
+}
+
+// ════════ PROJECT PROGRESS BARS (always visible) ════════
+function rProjectProgress(weeks){
+  const sp=sortedProjects().filter(p=>getProjBudget(p.id)>0);
+  if(!sp.length)return'';
+  const remWks=getRemainingWeeks(weeks);
+  const rows=sp.map(p=>{
+    const bud=getProjBudget(p.id);const used=getProjMonthUsedUpTo(p.id,weeks.length-1,weeks);
+    const pct=bud>0?Math.min(100,(used/bud)*100):0;
+    const rb=bud-used;const ppw=remWks>0?floorQ(rb/remWks):null;
+    const over=used>bud;
+    const barColor=over?'var(--danger)':ppw!==null&&ppw<(bud/weeks.length)*.5?'var(--warn)':'var(--success)';
+    return`<div class="proj-bar-row">
+      <div class="proj-bar-label">
+        <span style="display:flex;align-items:center;gap:6px;min-width:0"><span class="dot" style="background:${p.color}"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</span></span>
+        <span class="proj-bar-vals" style="color:${over?'var(--danger)':'var(--muted)'}">${fmtH(used)} / ${fmtH(bud)} u${over?' ⚠':''}</span>
+      </div>
+      <div class="proj-bar-track"><div class="proj-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join('');
+  return`<div class="panel" style="padding:14px 16px 10px"><div class="proj-bars">${rows}</div></div>`;
 }
 
 // ════════ MONTH CHART ════════
