@@ -30,7 +30,7 @@ body.dark {
   --input-bg:#242220;
 }
 body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px 16px 40px; transition:background .2s,color .2s; }
-.app { max-width:96vw; width:fit-content; margin:0 auto; }
+.app { max-width:96vw; margin:0 auto; }
 
 /* Header */
 .header { background:var(--header-bg); color:var(--header-fg); border-radius:14px; padding:18px 22px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -461,6 +461,15 @@ function render(){
     )+`<div class="footer">Data wordt automatisch opgeslagen · Klik op weekdoel om aan te passen</div>`;
   if(S.editTarget){const i=document.getElementById('tgt-inp');if(i){i.focus();i.select();}}
   if(S.showPanel){const i=document.getElementById('npi');if(i)i.value=S.newName;}
+  fitAppWidth();
+}
+function fitAppWidth(){
+  const app=document.getElementById('app');
+  app.style.width='';
+  let w=760;
+  app.querySelectorAll('.sdt').forEach(t=>{w=Math.max(w,t.scrollWidth+28+3);});
+  app.querySelectorAll('.year-table').forEach(t=>{w=Math.max(w,t.scrollWidth+3);});
+  app.style.width=w+'px';
 }
 
 // ════════ HEADER ════════
