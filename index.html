@@ -128,6 +128,32 @@ select { background:var(--input-bg); color:var(--text); border:1.5px solid var(-
 .copy-prevwk-btn { flex:none; display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); cursor:pointer; opacity:.55; transition:opacity .12s,color .12s,border-color .12s; }
 .copy-prevwk-btn:hover { opacity:1; color:var(--accent); border-color:var(--accent); }
 tr:hover .copy-prevwk-btn { opacity:.85; }
+.gcal-modal-box { background:var(--surface);border-radius:16px;width:100%;max-width:720px;box-shadow:0 8px 40px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden; }
+.gcal-modal-header { display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;border-bottom:1.5px solid var(--border); }
+.gcal-modal-footer { display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1.5px solid var(--border); }
+.gcal-proj-group { display:flex;flex-direction:column;gap:4px; }
+.gcal-hrs-inp { width:52px; padding:3px 5px; border-radius:7px; border:1.5px solid var(--border); background:var(--surface2); font-family:'DM Mono',monospace; font-size:13px; font-weight:700; color:var(--ink); text-align:center; }
+.gcal-hrs-inp:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-light); }
+.gcal-hrs-inp:disabled { opacity:.4; background:var(--surface); }
+.gcal-grid { width:100%; border-collapse:collapse; font-size:13px; }
+.gcal-grid th { padding:7px 10px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); text-align:center; border-bottom:1.5px solid var(--border); }
+.gcal-grid th.gcal-proj-th { text-align:left; min-width:120px; }
+.gcal-grid td { padding:6px 8px; border-bottom:1px solid var(--border); text-align:center; vertical-align:middle; }
+.gcal-grid td.gcal-proj-td { text-align:left; font-weight:600; font-size:12.5px; }
+.gcal-grid tbody tr:last-child td { border-bottom:none; }
+.gcal-cell { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.gcal-cell-chk { display:flex; align-items:center; justify-content:center; gap:5px; }
+.gcal-cell label { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:5px 7px; border-radius:9px; border:1.5px solid var(--border); background:var(--surface2); transition:background .1s, border-color .1s; min-width:64px; }
+.gcal-cell label.on { background:var(--accent-light); border-color:var(--accent); }
+.gcal-cell label.replace { border-color:var(--warn); background:rgba(212,118,10,.07); }
+.gcal-cell label.replace.on { background:rgba(212,118,10,.1); border-color:var(--warn); }
+.gcal-cell-old { font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; text-decoration:line-through; }
+.gcal-cell-new { font-size:12px; font-weight:700; font-family:'DM Mono',monospace; }
+.gcal-cell-new.is-new { color:var(--success); }
+.gcal-cell-new.is-replace { color:var(--warn); }
+.gcal-cell-inp { width:48px; padding:2px 4px; border-radius:6px; border:1.5px solid var(--border); background:var(--surface); font-family:'DM Mono',monospace; font-size:12px; font-weight:700; color:var(--ink); text-align:center; margin-top:1px; }
+.gcal-cell-inp:focus { outline:none; border-color:var(--accent); }
+.gcal-cell-titles { font-size:10px; color:var(--muted); max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .sdt td.sc { padding:0 3px; }
 .sep-line { display:block; width:1px; min-height:32px; background:linear-gradient(to bottom,transparent,var(--split-border),transparent); margin:0 auto; }
 .sdt tr.tr td { border-top:1.5px solid var(--border); padding-top:6px; font-size:11px; font-weight:700; text-align:center; font-family:'DM Mono',monospace; color:var(--ink); }
@@ -197,6 +223,29 @@ tr:hover .copy-prevwk-btn { opacity:.85; }
 <body>
 <div class="app" id="app"><div style="padding:60px;text-align:center;color:#9ca3af">Laden…</div></div>
 <div class="toast" id="toast"></div>
+
+<!-- Google Calendar import modal -->
+<div id="gcal-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:20px">
+  <div class="gcal-modal-box">
+    <div class="gcal-modal-header">
+      <span id="gcal-modal-title" style="font-size:15px;font-weight:700"></span>
+      <button onclick="closeGcalModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);line-height:1">✕</button>
+    </div>
+    <div style="padding:9px 16px 8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <span>Vink cellen aan om te importeren · Bestaande uren worden <strong>vervangen</strong></span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--accent-light);border:1.5px solid var(--accent);display:inline-block"></span>Nieuw</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:rgba(212,118,10,.1);border:1.5px solid var(--warn);display:inline-block"></span>Vervangt bestaand</span>
+    </div>
+    <div id="gcal-modal-body" style="overflow-y:auto;overflow-x:auto;max-height:60vh;padding:12px 16px;display:flex;flex-direction:column;gap:14px"></div>
+    <div class="gcal-modal-footer">
+      <span id="gcal-modal-count" style="font-size:12px;color:var(--muted)"></span>
+      <div style="display:flex;gap:8px">
+        <button onclick="closeGcalModal()" class="data-btn">Annuleren</button>
+        <button id="gcal-apply-btn" onclick="applyGcalImport()" class="add-btn" style="padding:8px 18px">Importeren</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 const MONTHS=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
 const MONTHS_SHORT=['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
@@ -440,19 +489,142 @@ async function importWeekFromGcal(weekKey){
     if(resp.status===401){S.gcalConnected=false;S.gcalToken=null;saveState();render();toast('Sessie verlopen, verbind opnieuw');return;}
     events=(await resp.json()).items||[];
   }catch{toast('Fout bij ophalen agenda');render();return;}
-  let matched=0;
+
+  // Collect candidates: {dk, pid, dur, title, existing}
+  const candidates=[];
   for(const ev of events){
-    const title=(ev.summary||'').toLowerCase();
-    const rule=S.gcalMappings.find(m=>title.includes(m.keyword.toLowerCase()));
+    const title=(ev.summary||'');
+    const rule=S.gcalMappings.find(m=>title.toLowerCase().includes(m.keyword.toLowerCase()));
     if(!rule)continue;const dur=floorQ(getEventDurHrs(ev));if(dur<=0)continue;
     if(!ev.start?.dateTime)continue;
     const d=new Date(ev.start.dateTime);
-    const dayIdx=(d.getDay()+6)%7;if(dayIdx>=5)continue; // skip weekends
-    const dk=fmt(d);const k=`${dk}|${rule.projId}`;
-    S.projDay[k]=(parseFloat(S.projDay[k])||0)+dur;matched++;
+    const dayIdx=(d.getDay()+6)%7;if(dayIdx>=5)continue;
+    const dk=fmt(d);
+    // merge same project+day
+    const ex=candidates.find(c=>c.dk===dk&&c.pid===rule.projId);
+    if(ex){ex.dur+=dur;ex.titles.add(title);}
+    else candidates.push({dk,pid:rule.projId,dur,titles:new Set([title]),existing:parseFloat(S.projDay[`${dk}|${rule.projId}`])||0});
   }
-  if(!matched){toast('Geen overeenkomsten gevonden');render();return;}
-  saveState();render();toast(`${matched} event${matched!==1?'s':''} geïmporteerd ✓`);
+  if(!candidates.length){render();toast('Geen overeenkomsten gevonden');return;}
+  render();
+  showGcalModal(weekKey,candidates,w);
+}
+
+function showGcalModal(weekKey,candidates,w){
+  const DAYS_SHORT=['Ma','Di','Wo','Do','Vr'];
+  const DAYS_LONG=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag'];
+  const weekdays=wkDays(w);
+
+  // Build lookup: key = pid+dk → candidate index
+  const byPidDay={};
+  candidates.forEach((c,i)=>{byPidDay[`${c.pid}|${c.dk}`]=i;});
+
+  // Collect unique projects in order of appearance
+  const pidsSeen=[];candidates.forEach(c=>{if(!pidsSeen.includes(c.pid))pidsSeen.push(c.pid);});
+  const projs=pidsSeen.map(pid=>S.projects.find(p=>p.id===pid)||{id:pid,name:pid,color:'#888'});
+
+  const sel={};const hrs={};
+  candidates.forEach((c,i)=>{sel[i]=true;hrs[i]=c.dur;});
+
+  function buildModal(){
+    const headCols=weekdays.map((d,di)=>{
+      const dateStr=`${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
+      return`<th style="min-width:82px;text-align:center"><div style="font-weight:700">${DAYS_SHORT[di]}</div><div style="font-size:10px;font-weight:400;color:var(--muted)">${dateStr}</div></th>`;
+    }).join('');
+
+    const daySelCols=weekdays.map((d,di)=>{
+      const dk=fmt(d);
+      const idxs=projs.map(p=>byPidDay[`${p.id}|${dk}`]).filter(i=>i!==undefined);
+      if(!idxs.length)return`<th></th>`;
+      const allOn=idxs.every(i=>sel[i]);
+      const someOn=idxs.some(i=>sel[i]);
+      return`<th style="text-align:center"><input type="checkbox" id="dsel-${dk}" ${allOn?'checked':''} style="accent-color:var(--accent)" onchange="gcalToggleDay('${dk}',this.checked)" title="Alles op ${DAYS_LONG[di]}"></th>`;
+    }).join('');
+
+    const projRows=projs.map(p=>{
+      const pidIdxs=candidates.map((_,i)=>i).filter(i=>candidates[i].pid===p.id);
+      const allProjOn=pidIdxs.every(i=>sel[i]);
+      const cells=weekdays.map(d=>{
+        const dk=fmt(d);const ci=byPidDay[`${p.id}|${dk}`];
+        if(ci===undefined)return`<td style="text-align:center"><span style="color:var(--border);font-size:18px">·</span></td>`;
+        const c=candidates[ci];const on=sel[ci];const isReplace=c.existing>0;
+        const h=parseFloat(hrs[ci])||0;
+        const borderCol=on?(isReplace?'var(--warn)':'var(--accent)'):'var(--border)';
+        const bgCol=on?(isReplace?'rgba(212,118,10,.1)':'var(--accent-light)'):'var(--surface2)';
+        const numCol=on?(isReplace?'var(--warn)':'var(--success)'):'var(--muted)';
+        return`<td style="text-align:center;padding:4px 6px">
+          <div style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:5px 6px;border-radius:9px;border:1.5px solid ${borderCol};background:${bgCol};min-width:66px;transition:all .1s">
+            <input type="checkbox" ${on?'checked':''} style="accent-color:${isReplace?'var(--warn)':'var(--accent)'};margin-bottom:1px" onchange="gcalToggle(${ci},this.checked)">
+            ${isReplace?`<span style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-decoration:line-through">${fmtH(c.existing)} u</span>`:''}
+            <input type="number" min="0" step="0.25" value="${h}" ${on?'':'disabled'}
+              style="width:46px;padding:2px 4px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:${numCol};text-align:center;outline:none"
+              onchange="gcalSetHrs(${ci},this.value)">
+            <span style="font-size:9px;color:var(--muted);max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${[...c.titles].map(esc).join(', ')}">${[...c.titles].map(esc).join(', ')}</span>
+          </div>
+        </td>`;
+      }).join('');
+      return`<tr>
+        <td style="padding:4px 8px 4px 0;white-space:nowrap;font-size:12.5px;font-weight:600;vertical-align:middle">
+          <div style="display:flex;align-items:center;gap:7px">
+            <input type="checkbox" id="psel-${p.id}" ${allProjOn?'checked':''} style="accent-color:var(--accent)" onchange="gcalToggleProj('${p.id}',this.checked)" title="Alles voor ${esc(p.name)}">
+            <span class="dot" style="background:${p.color};flex:none"></span>
+            <span style="overflow:hidden;text-overflow:ellipsis;max-width:110px">${esc(p.name)}</span>
+          </div>
+        </td>${cells}
+      </tr>`;
+    }).join('');
+
+    const selCount=Object.values(sel).filter(Boolean).length;
+    const replCount=candidates.filter((c,i)=>sel[i]&&c.existing>0).length;
+    document.getElementById('gcal-modal-body').innerHTML=`
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr><th style="text-align:left;padding:6px 8px 6px 0;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1.5px solid var(--border)">Project</th>${headCols.replace(/(<th)/g,'$1 style="padding:6px 6px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1.5px solid var(--border);text-align:center"').replace(/style="[^"]*" style="/g,'style="')}</tr>
+          <tr><th style="font-size:10px;color:var(--muted);font-weight:400;padding:4px 0 8px;border-bottom:1px solid var(--border)">Alles ↓</th>${daySelCols.replace(/(<th)/g,'$1 style="padding:4px 6px 8px;border-bottom:1px solid var(--border);text-align:center"')}</tr>
+        </thead>
+        <tbody>${projRows}</tbody>
+      </table>`;
+    document.getElementById('gcal-modal-count').innerHTML=
+      `<span>${selCount} van ${candidates.length} geselecteerd</span>`+
+      (replCount>0?`<span style="color:var(--warn);margin-left:8px">↺ ${replCount} vervanging${replCount!==1?'en':''}</span>`:'');
+    document.getElementById('gcal-apply-btn').disabled=selCount===0;
+
+    projs.forEach(p=>{
+      const pidIdxs=candidates.map((_,i)=>i).filter(i=>candidates[i].pid===p.id);
+      const allOn=pidIdxs.every(i=>sel[i]);const someOn=pidIdxs.some(i=>sel[i]);
+      const el=document.getElementById(`psel-${p.id}`);
+      if(el)el.indeterminate=someOn&&!allOn;
+    });
+    weekdays.forEach(d=>{
+      const dk=fmt(d);
+      const idxs=projs.map(p=>byPidDay[`${p.id}|${dk}`]).filter(i=>i!==undefined);
+      if(!idxs.length)return;
+      const allOn=idxs.every(i=>sel[i]);const someOn=idxs.some(i=>sel[i]);
+      const el=document.getElementById(`dsel-${dk}`);
+      if(el)el.indeterminate=someOn&&!allOn;
+    });
+  }
+
+  window.gcalToggle=function(i,v){sel[i]=v;buildModal();};
+  window.gcalToggleProj=function(pid,v){candidates.forEach((_,i)=>{if(candidates[i].pid===pid)sel[i]=v;});buildModal();};
+  window.gcalToggleDay=function(dk,v){candidates.forEach((_,i)=>{if(candidates[i].dk===dk)sel[i]=v;});buildModal();};
+  window.gcalSetHrs=function(i,v){hrs[i]=parseFloat(v)||0;};
+  window.closeGcalModal=function(){document.getElementById('gcal-modal').style.display='none';};
+  window.applyGcalImport=function(){
+    let applied=0;
+    candidates.forEach((c,i)=>{
+      if(!sel[i])return;
+      S.projDay[`${c.dk}|${c.pid}`]=hrs[i];
+      applied++;
+    });
+    saveState();render();toast(`${applied} dag${applied!==1?'en':''} geïmporteerd ✓`);
+    document.getElementById('gcal-modal').style.display='none';
+  };
+
+  document.getElementById('gcal-modal').style.display='flex';
+  const dr=`${w.inM[0].getDate()} – ${w.inM[w.inM.length-1].getDate()} ${MONTHS[S.mo]}`;
+  document.getElementById('gcal-modal-title').textContent=`Importeren — Week ${w.wk} (${dr})`;
+  buildModal();
 }
 
 // ════════ UTILS ════════
