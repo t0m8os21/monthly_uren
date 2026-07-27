@@ -128,6 +128,12 @@ select { background:var(--input-bg); color:var(--text); border:1.5px solid var(-
 .copy-prevwk-btn { flex:none; display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:6px; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); cursor:pointer; opacity:.55; transition:opacity .12s,color .12s,border-color .12s; }
 .copy-prevwk-btn:hover { opacity:1; color:var(--accent); border-color:var(--accent); }
 tr:hover .copy-prevwk-btn { opacity:.85; }
+.del-day-btn { display:flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:5px; border:1.5px solid transparent; background:none; color:transparent; cursor:pointer; transition:color .12s,border-color .12s,background .12s; flex:none; padding:0; }
+th:hover .del-day-btn, .del-day-btn:hover { color:var(--danger); border-color:var(--danger); background:rgba(220,53,69,.07); }
+.del-proj-day-btn { display:flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;border:1.5px solid transparent;background:none;color:transparent;cursor:pointer;transition:color .12s,border-color .12s;padding:0;flex:none; }
+td:hover .del-proj-day-btn { color:var(--danger); border-color:var(--danger); }
+.del-week-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:8px; border:1.5px solid var(--danger); background:none; color:var(--danger); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; opacity:.7; transition:opacity .12s,background .12s; }
+.del-week-btn:hover { opacity:1; background:rgba(220,53,69,.07); }
 .gcal-modal-box { background:var(--surface);border-radius:16px;width:100%;max-width:720px;box-shadow:0 8px 40px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden; }
 .gcal-modal-header { display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;border-bottom:1.5px solid var(--border); }
 .gcal-modal-footer { display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1.5px solid var(--border); }
@@ -415,6 +421,13 @@ function copyPrevWeekProj(wMonKey,pid){
   }
   saveState();render();
 }
+function deleteProjDay(dk,pid){delete S.projDay[`${dk}|${pid}`];saveState();render();}
+function deleteDay(dk){S.projects.forEach(p=>{delete S.projDay[`${dk}|${p.id}`];});saveState();render();}
+function deleteWeek(wMonKey){
+  const[y,m,dd]=wMonKey.split('-').map(Number);const mon=new Date(y,m-1,dd);
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(d.getDate()+i);const dk=fmt(d);S.projects.forEach(p=>{delete S.projDay[`${dk}|${p.id}`];});}
+  saveState();render();toast('Week gewist ✓');
+}
 function setAbsence(wk,type,v){S.absences[`${wk}|${type}`]=v;saveState();render();}
 function setBudget(pid,mk,v){if(!S.budgets[mk])S.budgets[mk]={};S.budgets[mk][pid]=v;saveState();}
 function toggleWk(key){S.collapsedWks[key]=!S.collapsedWks[key];render();}
@@ -497,6 +510,7 @@ async function importWeekFromGcal(weekKey){
     const rule=S.gcalMappings.find(m=>title.toLowerCase().includes(m.keyword.toLowerCase()));
     if(!rule)continue;const dur=floorQ(getEventDurHrs(ev));if(dur<=0)continue;
     if(!ev.start?.dateTime)continue;
+    if(!getProjBudget(rule.projId))continue; // skip projects without budget
     const d=new Date(ev.start.dateTime);
     const dayIdx=(d.getDay()+6)%7;if(dayIdx>=5)continue;
     const dk=fmt(d);
@@ -906,7 +920,13 @@ function rWeek(w,weeks,wIdx){
     const isActive=!w.split||w.inM.some(x=>fmt(x)===fmt(d));
     const cls=isActive?'dm':'do';
     const afterSep=sepIdx===i?`<th class="sc" style="width:10px"></th>`:'';
-    return`<th class="${cls}" style="min-width:58px">${DAYS_WK[i]}<br><span style="font-weight:400;opacity:.7;font-size:9px">${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}</span></th>${afterSep}`;
+    const dk=fmt(d);
+    return`<th class="${cls}" style="min-width:58px;position:relative">
+      ${DAYS_WK[i]}<br><span style="font-weight:400;opacity:.7;font-size:9px">${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}</span>
+      <button class="del-day-btn" title="Wis dag ${DAYS_WK[i]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}" onclick="event.stopPropagation();deleteDay('${dk}')">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>
+    </th>${afterSep}`;
   }).join('');
 
   let tableContent='';
@@ -925,6 +945,7 @@ function rWeek(w,weeks,wIdx){
       const cells=weekdays.map((d,i)=>{
         const isActive=!w.split||w.inM.some(x=>fmt(x)===fmt(d));
         const dk=fmt(d);const v=S.projDay[`${dk}|${p.id}`]??'';
+        const hasVal=v!=='';
         const inp=isActive
           ?`<input class="dpi" style="border-color:${ha(p.color,.3)};color:${p.color}"
               type="number" min="0" step="0.25" value="${v}" placeholder="0"
@@ -932,8 +953,11 @@ function rWeek(w,weeks,wIdx){
               onfocus="this.style.boxShadow='0 0 0 2px ${ha(p.color,.22)}'" onblur="this.style.boxShadow='none'">`
           :`<input class="dpi dim" type="number" min="0" step="0.25" value="${v}" placeholder="0"
               onchange="setProjDayHrs('${dk}','${p.id}',this.value)">`;
+        const delBtn=hasVal?`<button class="del-proj-day-btn" title="Wis ${esc(p.name)} op ${DAYS_WK[i]} ${d.getDate()}" onclick="deleteProjDay('${dk}','${p.id}')">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>`:'';
         const afterSep=sepIdx===i?`<td class="sc"><span class="sep-line"></span></td>`:'';
-        return`<td>${inp}</td>${afterSep}`;
+        return`<td><div style="display:flex;align-items:center;justify-content:center;gap:2px">${inp}${delBtn}</div></td>${afterSep}`;
       }).join('');
 
       const availCell=bud>0
@@ -1035,9 +1059,15 @@ function rWeek(w,weeks,wIdx){
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Importeer uit Google Agenda</button>`:'';
 
+  const delWeekBtn=`<button class="del-week-btn" title="Verwijder alle uren van week ${w.wk}" onclick="if(confirm('Alle uren van week ${w.wk} verwijderen?'))deleteWeek('${w.key}')">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+    Wis week</button>`;
+
   return`<div class="week-card ${w.split?'split':''} ${hasOverrun?'warning':''}">
     ${head}
-    <div class="week-body">${tableContent}${footer}${fcHtml}${importBtn}</div>
+    <div class="week-body">${tableContent}${footer}${fcHtml}
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">${importBtn}${delWeekBtn}</div>
+    </div>
   </div>`;
 }
 
